@@ -6,13 +6,18 @@ import kotlinx.serialization.Serializable
 object MenuScreen
 
 @Serializable
-object GameScreen
+data class GameScreen(
+    val rounds: Int,
+    val columns: Int,
+    val moneyValues: IntArray,
+    val isResumeGame: Boolean
+)
 
 @Serializable
 object ResultsScreen
 
 @Serializable
-object PastGamesList
+object PastGamesListScreen
 
 // Might not bother with this but it's an idea.
 @Serializable
