@@ -66,6 +66,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     // Dependency for type-safe Navigation Compose.
     implementation(libs.kotlinx.serialization.core)
+    // For the Google Font provider used for the clue box font (I'm not licensing Swiss).
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.7.3")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
