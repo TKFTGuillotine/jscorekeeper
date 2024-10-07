@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">J! Scorekeeper</string>
+    <string name="play_us_game">Play US Game</string>
+    <string name="play_uk_game">Play UK Game</string>
+    <string name="play_au_game">Play AU Game</string>
+    <string name="view_history">View History</string>
 </resources>
