@@ -14,6 +14,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.guillotine.jscorekeeper.composable.GameScreenComposable
 import com.guillotine.jscorekeeper.composable.MenuScreenComposable
 import com.guillotine.jscorekeeper.ui.theme.JScorekeeperTheme
 import kotlinx.serialization.Serializable
@@ -33,7 +35,7 @@ class MainActivity : ComponentActivity() {
                         MenuScreenComposable(navController, applicationContext)
                     }
                     composable<GameScreen> {
-                        Text("Game Screen!")
+                        GameScreenComposable(navController, it.toRoute<GameScreen>())
                     }
                     composable<PastGamesListScreen> {
                         Text("History Screen!")
