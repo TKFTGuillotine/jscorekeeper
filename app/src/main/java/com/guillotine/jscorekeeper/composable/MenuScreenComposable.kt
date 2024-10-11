@@ -25,15 +25,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.guillotine.jscorekeeper.GameModes
 import com.guillotine.jscorekeeper.GameScreen
 import com.guillotine.jscorekeeper.PastGamesListScreen
 import com.guillotine.jscorekeeper.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuScreenComposable(navController: NavHostController, applicationContext: Context?) {
+fun MenuScreenComposable(navController: NavHostController) {
     Scaffold(topBar = {
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
@@ -65,25 +67,14 @@ fun MenuScreenComposable(navController: NavHostController, applicationContext: C
                     // match the size of the largest button.
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        if (applicationContext != null) {
-                            navController.navigate(
-                                GameScreen(
-                                    rounds = applicationContext.resources.getInteger(
-                                        R.integer.usa_rounds
-                                    ),
-                                    columns = applicationContext.resources.getInteger(
-                                        R.integer.usa_columns
-                                    ),
-                                    currency = applicationContext.resources.getString(
-                                        R.string.usa_currency
-                                    ),
-                                    moneyValues = applicationContext.resources.getIntArray(
-                                        R.array.usa_money
-                                    ),
-                                    isResumeGame = false
-                                )
+
+                        navController.navigate(
+                            GameScreen(
+                                gameMode = GameModes.USA,
+                                isResumeGame = false
                             )
-                        }
+                        )
+
                     }
                 ) {
                     Text(stringResource(R.string.play_us_game))
@@ -91,25 +82,13 @@ fun MenuScreenComposable(navController: NavHostController, applicationContext: C
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        if (applicationContext != null) {
-                            navController.navigate(
-                                GameScreen(
-                                    rounds = applicationContext.resources.getInteger(
-                                        R.integer.uk_rounds
-                                    ),
-                                    columns = applicationContext.resources.getInteger(
-                                        R.integer.uk_columns
-                                    ),
-                                    currency = applicationContext.resources.getString(
-                                        R.string.uk_currency
-                                    ),
-                                    moneyValues = applicationContext.resources.getIntArray(
-                                        R.array.uk_money
-                                    ),
-                                    isResumeGame = false
-                                )
+                        navController.navigate(
+                            GameScreen(
+                                gameMode = GameModes.UK,
+                                isResumeGame = false
                             )
-                        }
+                        )
+
                     }
                 ) {
                     Text(stringResource(R.string.play_uk_game))
@@ -117,25 +96,13 @@ fun MenuScreenComposable(navController: NavHostController, applicationContext: C
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        if (applicationContext != null) {
-                            navController.navigate(
-                                GameScreen(
-                                    rounds = applicationContext.resources.getInteger(
-                                        R.integer.australia_rounds
-                                    ),
-                                    columns = applicationContext.resources.getInteger(
-                                        R.integer.australia_columns
-                                    ),
-                                    currency = applicationContext.resources.getString(
-                                        R.string.australia_currency
-                                    ),
-                                    moneyValues = applicationContext.resources.getIntArray(
-                                        R.array.australia_money
-                                    ),
-                                    isResumeGame = false
-                                )
+                        navController.navigate(
+                            GameScreen(
+                                gameMode = GameModes.AUSTRALIA,
+                                isResumeGame = false
                             )
-                        }
+                        )
+
                     }
                 ) {
                     Text(stringResource(R.string.play_au_game))
@@ -158,5 +125,5 @@ fun MenuScreenComposable(navController: NavHostController, applicationContext: C
 @Preview
 @Composable
 fun MenuPreview() {
-    MenuScreenComposable(rememberNavController(), null)
+    MenuScreenComposable(rememberNavController())
 }
