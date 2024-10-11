@@ -1,18 +1,15 @@
-package com.guillotine.jscorekeeper.composable
+package com.guillotine.jscorekeeper.composable.game
 
 import android.app.Application
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +20,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -30,7 +28,6 @@ import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -52,11 +49,11 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
         // moving any Context access up to the UI layer. Nonetheless, I have it pulled out into a
         // different function and not *stored* anywhere here such that I don't accidentally refer to
         // the wrong data later.
-        GameScreenViewModel(processGameData(applicationContext as Application, gameMode), isResumeGame)
+        GameScreenViewModel(
+            processGameData(applicationContext as Application, gameMode),
+            isResumeGame
+        )
     }
-
-    // For spacing buttons
-    val VERTICAL_SPACING = 8.dp
 
     // Font provider, from which we can pull the gameboard font approximation.
     val fontProvider = GoogleFont.Provider(
@@ -92,51 +89,27 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
             }
         )
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Row(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                Modifier
-                    .fillMaxHeight()
-                    .width(IntrinsicSize.Max)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Spacer(Modifier.size(VERTICAL_SPACING))
-                // Often you wouldn't want to do this, but since the number of items is small and I want
-                // them all available, this seems fine.
-                viewModel.moneyValues.forEach {
-                    GameBoardButton(
-                        text = "${viewModel.currency}$it",
-                        fontFamily = bebasNeueFamily,
-                        modifier = Modifier.weight(1f),
-                        onClick = {}
-                    )
-                    Spacer(Modifier.size(VERTICAL_SPACING))
-                }
 
-            }
-            Column(
-                Modifier
-                    .fillMaxHeight()
-                    .width(IntrinsicSize.Max),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("${stringResource(R.string.score)}: ${viewModel.score}")
-                Button(
-                    onClick = {
-                        viewModel.showRoundDialog()
-                    }
-                ) {
-                    Text(text = stringResource(R.string.next_round))
-                }
-            }
+        when (LocalConfiguration.current.orientation) {
+            Configuration.ORIENTATION_LANDSCAPE -> GameBoardHorizontalComposable(
+                innerPadding = innerPadding,
+                moneyValues = viewModel.moneyValues,
+                currency = viewModel.currency,
+                score = viewModel.score,
+                fontFamily = bebasNeueFamily,
+                onClueClick = { viewModel.changeScore(it) },
+                onNextRoundClick = { viewModel.nextRound() }
+            )
+
+            else -> GameBoardVerticalComposable(
+                innerPadding = innerPadding,
+                moneyValues = viewModel.moneyValues,
+                currency = viewModel.currency,
+                score = viewModel.score,
+                fontFamily = bebasNeueFamily,
+                onClueClick = { viewModel.changeScore(it) },
+                onNextRoundClick = { viewModel.nextRound() }
+            )
         }
 
         if (viewModel.isShowRoundDialog) {
@@ -153,7 +126,7 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
     }
 }
 
-fun processGameData(applicationContext: Application, gameMode: GameModes) : GameData {
+fun processGameData(applicationContext: Application, gameMode: GameModes): GameData {
     val rounds = when (gameMode) {
         GameModes.USA -> applicationContext.resources.getInteger(R.integer.usa_rounds)
         GameModes.UK -> applicationContext.resources.getInteger(R.integer.uk_rounds)
