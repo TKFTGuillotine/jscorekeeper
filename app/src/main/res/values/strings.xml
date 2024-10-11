@@ -4,4 +4,8 @@
     <string name="play_uk_game">Play UK Game</string>
     <string name="play_au_game">Play AU Game</string>
     <string name="view_history">View History</string>
+    <string name="round">Round</string>
+    <string name="j">J!</string>
+    <string name="double_j">Double J!</string>
+    <string name="final_j">Final J!</string>
 </resources>
