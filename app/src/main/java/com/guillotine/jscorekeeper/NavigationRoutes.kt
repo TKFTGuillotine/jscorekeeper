@@ -7,11 +7,9 @@ object MenuScreen
 
 @Serializable
 data class GameScreen(
-    val rounds: Int,
-    val columns: Int,
-    val moneyValues: IntArray,
-    val currency: String,
-    val isResumeGame: Boolean
+    val gameMode: GameModes,
+    val isResumeGame: Boolean,
+
 )
 
 @Serializable
