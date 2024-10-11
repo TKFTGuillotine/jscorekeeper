@@ -8,4 +8,16 @@
     <string name="j">J!</string>
     <string name="double_j">Double J!</string>
     <string name="final_j">Final J!</string>
+    <string name="score">Score</string>
+    <string name="next_round">Next Round</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="next_round_dialog_content">
+        Once you continue to the next round, you will not be able to return to this round.
+    </string>
+    <string name="confirm_continue">Continue</string>
+    <string name="cancel">Cancel</string>
+
+
+    <!-- Content Descriptions -->
+    <string name="warning_icon_description">Warning Icon</string>
 </resources>
