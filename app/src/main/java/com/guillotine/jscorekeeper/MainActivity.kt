@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     startDestination = MenuScreen
                 ) {
                     composable<MenuScreen> {
-                        MenuScreenComposable(navController, applicationContext)
+                        MenuScreenComposable(navController)
                     }
                     composable<GameScreen> {
                         GameScreenComposable(navController, it.toRoute<GameScreen>())
