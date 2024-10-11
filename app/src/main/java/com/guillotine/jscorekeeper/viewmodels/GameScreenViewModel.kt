@@ -1,23 +1,50 @@
 package com.guillotine.jscorekeeper.viewmodels
 
+import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
+import com.guillotine.jscorekeeper.GameData
+import com.guillotine.jscorekeeper.GameModes
+import com.guillotine.jscorekeeper.R
 
-class GameScreenViewModel(rounds: Int): ViewModel() {
+class GameScreenViewModel(gameData: GameData, isResumeGame: Boolean): ViewModel() {
     var score by mutableStateOf(0)
         private set
     var round by mutableStateOf(0)
         private set
-    var moneyValues by mutableStateOf(IntArray(5))
+    var moneyValues by mutableStateOf(gameData.moneyValues)
         private set
-    private val rounds = rounds
+    var isShowRoundDialog by mutableStateOf(false)
+        private set
+    var isShowScoreDialog by mutableStateOf(false)
+        private set
 
+    val currency = gameData.currency
+    val rounds = gameData.rounds
+    private val columns = gameData.columns
 
     fun changeScore(delta: Int) {
         score += delta
+    }
+
+    fun showRoundDialog() {
+        isShowRoundDialog = true
+    }
+
+    fun onRoundDialogDismiss() {
+        isShowRoundDialog = false
+    }
+
+    fun isDoubleJ(): Boolean {
+        return round == rounds - 2
+    }
+
+    fun isFinalJ(): Boolean {
+        return round == rounds - 1
     }
 
     fun nextRound() {
@@ -27,6 +54,7 @@ class GameScreenViewModel(rounds: Int): ViewModel() {
             // map returns a List rather than an IntArray. Must convert.
             moneyValues = moneyValues.map{it * 2}.toIntArray()
         }
+        isShowRoundDialog = false
     }
 
 }
