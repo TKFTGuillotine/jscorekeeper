@@ -30,7 +30,7 @@ fun GameBoardVerticalComposable(
     onClueClick: (Int) -> Unit
 ) {
     // For spacing buttons
-    val VERTICAL_SPACING = 8.dp
+    val verticalSpacing = 8.dp
 
     Row(
         modifier = Modifier
@@ -47,7 +47,7 @@ fun GameBoardVerticalComposable(
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(Modifier.size(VERTICAL_SPACING))
+            Spacer(Modifier.size(verticalSpacing))
             // Often you wouldn't want to do this, but since the number of items is small and I want
             // them all available, this seems fine.
             moneyValues.forEach {
@@ -57,7 +57,7 @@ fun GameBoardVerticalComposable(
                     modifier = Modifier.weight(1f),
                     onClick = {onClueClick(it)}
                 )
-                Spacer(Modifier.size(VERTICAL_SPACING))
+                Spacer(Modifier.size(verticalSpacing))
             }
 
         }
