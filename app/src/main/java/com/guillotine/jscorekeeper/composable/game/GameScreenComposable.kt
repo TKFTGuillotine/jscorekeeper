@@ -70,25 +70,28 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
         Font(googleFont = bebasNeue, fontProvider = fontProvider)
     )
 
-    Scaffold(topBar = {
-        TopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                titleContentColor = MaterialTheme.colorScheme.primary
-            ),
-            title = {
-                Text(
-                    "${
-                        if (viewModel.isDoubleJ()) {
-                            stringResource(R.string.double_j)
-                        } else {
-                            stringResource(R.string.j)
-                        }
-                    } - ${stringResource(R.string.round)} ${viewModel.round + 1}"
-                )
-            }
-        )
-    }, modifier = Modifier.fillMaxSize()) { innerPadding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary
+                ),
+                title = {
+                    Text(
+                        "${
+                            if (viewModel.isDoubleJ()) {
+                                stringResource(R.string.double_j)
+                            } else {
+                                stringResource(R.string.j)
+                            }
+                        } - ${stringResource(R.string.round)} ${viewModel.round + 1}"
+                    )
+                }
+            )
+        },
+        modifier = Modifier.fillMaxSize(),
+    ) { innerPadding ->
 
         when (LocalConfiguration.current.orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> GameBoardHorizontalComposable(
