@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,11 +33,16 @@ fun GameBoardHorizontalComposable(
     onClueClick: (Int) -> Unit
 ) {
     // For spacing buttons
-    val HORIZONTAL_SPACING = 8.dp
+    val horizontalSpacing = 8.dp
+    // The whole scaffold thing doesn't seem to account for the display cutout, so I'll handle it
+    // myself here. It works fine in portrait because of the cutout being a part of the status bar,
+    // so that's nice at least.
+    val displayCutoutPadding = WindowInsets.displayCutout.asPaddingValues()
 
     Column(
         modifier = Modifier
             .padding(innerPadding)
+            .padding(displayCutoutPadding)
             .fillMaxSize(),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -62,7 +70,7 @@ fun GameBoardHorizontalComposable(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Spacer(Modifier.size(HORIZONTAL_SPACING))
+            Spacer(Modifier.size(horizontalSpacing))
             // Often you wouldn't want to do this, but since the number of items is small and I want
             // them all available, this seems fine.
             moneyValues.forEach {
@@ -72,7 +80,7 @@ fun GameBoardHorizontalComposable(
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                     onClick = {onClueClick(it)}
                 )
-                Spacer(Modifier.size(HORIZONTAL_SPACING))
+                Spacer(Modifier.size(horizontalSpacing))
             }
 
         }
