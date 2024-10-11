@@ -1,4 +1,4 @@
-package com.guillotine.jscorekeeper.composable
+package com.guillotine.jscorekeeper.composable.game
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
