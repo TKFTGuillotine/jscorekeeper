@@ -2,8 +2,16 @@ package com.guillotine.jscorekeeper.composable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -19,19 +27,33 @@ import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.guillotine.jscorekeeper.GameScreen
 import com.guillotine.jscorekeeper.R
+import com.guillotine.jscorekeeper.viewmodels.GameScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameScreen) {
     val rounds = gameScreenArgs.rounds
     val columns = gameScreenArgs.columns
+    val currency = gameScreenArgs.currency
     val moneyValues = gameScreenArgs.moneyValues
     val isResumeGame = gameScreenArgs.isResumeGame
+
+    val viewModel = viewModel<GameScreenViewModel>(
+        factory = object: ViewModelProvider.Factory {
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                return GameScreenViewModel(rounds) as T
+            }
+        }
+    )
+
+    // For spacing buttons
+    val VERTICAL_SPACING = 8.dp
 
     // Font provider, from which we can pull the gameboard font approximation.
     val fontProvider = GoogleFont.Provider(
@@ -55,18 +77,45 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                 titleContentColor = MaterialTheme.colorScheme.primary
             ),
             title = {
-                Text(stringResource(R.string.app_name))
+                Text("${
+                    if (rounds - 2 == viewModel.round) {
+                        stringResource(R.string.double_j)
+                    } else {
+                        stringResource(R.string.j)
+                    }
+                } - ${stringResource(R.string.round)} ${viewModel.round + 1}")
             }
         )
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(
-            Modifier
+        Row(
+            modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("$200", fontFamily = bebasNeueFamily, fontSize = 50.sp)
+            Column(
+                Modifier
+                    .fillMaxHeight()
+                    .width(IntrinsicSize.Max)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Spacer(Modifier.size(VERTICAL_SPACING))
+                // Often you wouldn't want to do this, but since the number of items is small and I want
+                // them all available, this seems fine.
+                moneyValues.forEach {
+                    GameBoardButton(
+                        text = "$currency$it",
+                        fontFamily = bebasNeueFamily,
+                        modifier = Modifier.weight(1f),
+                        onClick = {}
+                    )
+                    Spacer(Modifier.size(VERTICAL_SPACING))
+                }
+
+            }
         }
     }
 }
@@ -76,6 +125,12 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
 fun GameScreenPreview() {
     GameScreenComposable(
         rememberNavController(),
-        GameScreen(3, 6, intArrayOf(200, 400, 600, 800, 1000), false)
+        GameScreen(
+            rounds = 3,
+            columns = 6,
+            currency = "$",
+            moneyValues = intArrayOf(200, 400, 600, 800, 1000),
+            isResumeGame = false
+        )
     )
 }
