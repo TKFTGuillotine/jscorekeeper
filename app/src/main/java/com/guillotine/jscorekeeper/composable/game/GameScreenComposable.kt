@@ -55,21 +55,6 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
         )
     }
 
-    // Font provider, from which we can pull the gameboard font approximation.
-    val fontProvider = GoogleFont.Provider(
-        providerAuthority = "com.google.android.gms.fonts",
-        providerPackage = "com.google.android.gms",
-        certificates = R.array.com_google_android_gms_fonts_certs
-    )
-
-    // Looks close enough to Swiss 911 without requiring I license the thing for money.
-    val bebasNeue = GoogleFont(name = "Bebas Neue")
-
-    // Can be passed into a Text Composable, finally.
-    val bebasNeueFamily = FontFamily(
-        Font(googleFont = bebasNeue, fontProvider = fontProvider)
-    )
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -99,9 +84,9 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                 moneyValues = viewModel.moneyValues,
                 currency = viewModel.currency,
                 score = viewModel.score,
-                fontFamily = bebasNeueFamily,
-                onClueClick = { viewModel.changeScore(it) },
-                onNextRoundClick = { viewModel.nextRound() }
+                onClueClick = { viewModel.showClueDialog(it) },
+                //onClueClick = { viewModel.changeScore(it) },
+                onNextRoundClick = { viewModel.showRoundDialog() }
             )
 
             else -> GameBoardVerticalComposable(
@@ -109,9 +94,9 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                 moneyValues = viewModel.moneyValues,
                 currency = viewModel.currency,
                 score = viewModel.score,
-                fontFamily = bebasNeueFamily,
-                onClueClick = { viewModel.changeScore(it) },
-                onNextRoundClick = { viewModel.nextRound() }
+                onClueClick = { viewModel.showClueDialog(it) },
+                //onClueClick = { viewModel.changeScore(it) },
+                onNextRoundClick = { viewModel.showRoundDialog() }
             )
         }
 
@@ -124,8 +109,27 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                     viewModel.nextRound()
                 }
             )
+        } else if (viewModel.isShowClueDialog) {
+            ClueDialog(
+                onDismissRequest = {
+                    viewModel.onClueDialogDismiss()
+                },
+                value = viewModel.currentValue,
+                currency = viewModel.currency,
+                onCorrect = {
+                    viewModel.correctResponse(it)
+                },
+                onIncorrect = {
+                    viewModel.incorrectResponse(it)
+                },
+                onDailyDouble = {
+                    viewModel.dailyDouble(it)
+                },
+                onPass = {
+                    viewModel.noAnswer(it)
+                }
+            )
         }
-
     }
 }
 
