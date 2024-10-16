@@ -20,7 +20,9 @@ class GameScreenViewModel(gameData: GameData, isResumeGame: Boolean): ViewModel(
         private set
     var isShowRoundDialog by mutableStateOf(false)
         private set
-    var isShowScoreDialog by mutableStateOf(false)
+    var isShowClueDialog by mutableStateOf(false)
+        private set
+    var currentValue by mutableStateOf(0)
         private set
 
     val currency = gameData.currency
@@ -35,8 +37,17 @@ class GameScreenViewModel(gameData: GameData, isResumeGame: Boolean): ViewModel(
         isShowRoundDialog = true
     }
 
+    fun showClueDialog(value: Int) {
+        currentValue = value
+        isShowClueDialog = true
+    }
+
     fun onRoundDialogDismiss() {
         isShowRoundDialog = false
+    }
+
+    fun onClueDialogDismiss() {
+        isShowClueDialog = false
     }
 
     fun isDoubleJ(): Boolean {
@@ -55,6 +66,24 @@ class GameScreenViewModel(gameData: GameData, isResumeGame: Boolean): ViewModel(
             moneyValues = moneyValues.map{it * 2}.toIntArray()
         }
         isShowRoundDialog = false
+    }
+
+    fun correctResponse(value: Int) {
+        score += value
+        isShowClueDialog = false
+    }
+
+    fun incorrectResponse(value: Int) {
+        score -= value
+        isShowClueDialog = false
+    }
+
+    fun noAnswer(value: Int) {
+        isShowClueDialog = false
+    }
+
+    fun dailyDouble(value: Int) {
+        isShowClueDialog = false
     }
 
 }
