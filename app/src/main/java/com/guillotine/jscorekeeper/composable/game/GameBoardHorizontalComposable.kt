@@ -28,7 +28,6 @@ fun GameBoardHorizontalComposable(
     moneyValues: IntArray,
     currency: String,
     score: Int,
-    fontFamily: FontFamily,
     onNextRoundClick: () -> Unit,
     onClueClick: (Int) -> Unit
 ) {
@@ -54,7 +53,12 @@ fun GameBoardHorizontalComposable(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("${stringResource(R.string.score)}: ${currency}${score}")
+            // I'd rather the negative be displayed before the currency symbol, as on the show.
+            if (score >= 0) {
+                Text("${stringResource(R.string.score)}: ${currency}${score}")
+            } else {
+                Text("${stringResource(R.string.score)}: -${currency}${Math.abs(score)}")
+            }
             Button(
                 onClick = {onNextRoundClick()}
             ) {
@@ -76,7 +80,6 @@ fun GameBoardHorizontalComposable(
             moneyValues.forEach {
                 GameBoardButton(
                     text = "${currency}$it",
-                    fontFamily = fontFamily,
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                     onClick = {onClueClick(it)}
                 )
