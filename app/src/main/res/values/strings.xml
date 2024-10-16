@@ -1,21 +1,25 @@
 <resources>
     <string name="app_name">J! Scorekeeper</string>
-    <string name="play_us_game">Play US Game</string>
-    <string name="play_uk_game">Play UK Game</string>
-    <string name="play_au_game">Play AU Game</string>
-    <string name="view_history">View History</string>
+    <string name="play_us_game">Play US game</string>
+    <string name="play_uk_game">Play UK game</string>
+    <string name="play_au_game">Play AU game</string>
+    <string name="view_history">View history</string>
     <string name="round">Round</string>
     <string name="j">J!</string>
     <string name="double_j">Double J!</string>
     <string name="final_j">Final J!</string>
     <string name="score">Score</string>
-    <string name="next_round">Next Round</string>
-    <string name="are_you_sure">Are you sure?</string>
+    <string name="next_round">Next round</string>
+    <string name="move_to_next_round">Move to next round?</string>
     <string name="next_round_dialog_content">
         Once you continue to the next round, you will not be able to return to this round.
     </string>
     <string name="confirm_continue">Continue</string>
     <string name="cancel">Cancel</string>
+    <string name="correct">Correct</string>
+    <string name="incorrect">Incorrect</string>
+    <string name="pass">Pass</string>
+    <string name="daily_double">Daily Double</string>
 
 
     <!-- Content Descriptions -->
