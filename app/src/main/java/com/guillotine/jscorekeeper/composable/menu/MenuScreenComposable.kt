@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.guillotine.jscorekeeper.GameModes
+import com.guillotine.jscorekeeper.data.GameModes
 import com.guillotine.jscorekeeper.GameScreen
 import com.guillotine.jscorekeeper.PastGamesListScreen
 import com.guillotine.jscorekeeper.R
