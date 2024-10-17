@@ -20,6 +20,11 @@
     <string name="incorrect">Incorrect</string>
     <string name="pass">Pass</string>
     <string name="daily_double">Daily Double</string>
+    <string name="enter_wager">Enter wager</string>
+    <string name="wager_invalid">Please enter a valid wager.</string>
+    <string name="submit">Submit</string>
+    <string name="were_you_correct">Were you correct?</string>
+    <string name="wager">Wager</string>
 
 
     <!-- Content Descriptions -->
