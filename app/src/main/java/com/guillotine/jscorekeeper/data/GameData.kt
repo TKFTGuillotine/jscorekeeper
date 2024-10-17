@@ -1,4 +1,4 @@
-package com.guillotine.jscorekeeper
+package com.guillotine.jscorekeeper.data
 
 data class GameData(
     val moneyValues: IntArray,
