@@ -1,5 +1,6 @@
 package com.guillotine.jscorekeeper
 
+import com.guillotine.jscorekeeper.data.GameModes
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,7 +10,6 @@ object MenuScreen
 data class GameScreen(
     val gameMode: GameModes,
     val isResumeGame: Boolean,
-
 )
 
 @Serializable
