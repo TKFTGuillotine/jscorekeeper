@@ -1,6 +1,5 @@
 package com.guillotine.jscorekeeper.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +32,19 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+// Wow, did this ever take too long to figure out! The joys of using custom colors, I suppose.
+private val ClueCardColorScheme = darkColorScheme(
+    primary = ClueDialogActiveButton,
+    onSurface = ClueDialogInactiveButton,
+    onSurfaceVariant = ClueTextOrange,
+    surfaceVariant = ClueBoxBlue
+)
+
+private val ClueButtonColorScheme = darkColorScheme(
+    primary = ClueBoxBlue,
+    onPrimary = ClueTextOrange
+)
+
 @Composable
 fun JScorekeeperTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -53,6 +65,24 @@ fun JScorekeeperTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        content = content
+    )
+}
+
+@Composable
+fun ClueCardTheme(content: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = ClueCardColorScheme,
+        typography = ClueCardTypography,
+        content = content
+    )
+}
+
+@Composable
+fun ClueButtonTheme(content: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = ClueButtonColorScheme,
+        typography = ClueButtonTypography,
         content = content
     )
 }
