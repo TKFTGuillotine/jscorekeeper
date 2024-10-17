@@ -37,16 +37,14 @@ val Typography = Typography(
 
 val bebasNeueFamily = FontFamily(Font(R.font.bebas_neue))
 
-val ClueCardTypography = Typography(
-    headlineLarge = TextStyle(
+val ClueButtonTypography = Typography(
+    labelLarge = TextStyle(
         fontFamily = bebasNeueFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 50.sp
-    )
-)
+    ),
 
-val ClueButtonTypography = Typography(
-    labelLarge = TextStyle(
+    headlineSmall = TextStyle(
         fontFamily = bebasNeueFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 50.sp

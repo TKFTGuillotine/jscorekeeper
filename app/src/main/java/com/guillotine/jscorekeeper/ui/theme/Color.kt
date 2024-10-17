@@ -12,6 +12,3 @@ val Pink40 = Color(0xFF7D5260)
 
 val ClueBoxBlue = Color(0xFF00178E)
 val ClueTextOrange = Color(0xFFFBB43E)
-val ClueDialogActiveButton = Color(0xFFFFFFFF)
-// 0.38 opacity per M3 spec.
-val ClueDialogInactiveButton = Color(0x619DA9E6)

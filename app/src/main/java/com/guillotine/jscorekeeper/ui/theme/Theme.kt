@@ -34,10 +34,8 @@ private val LightColorScheme = lightColorScheme(
 
 // Wow, did this ever take too long to figure out! The joys of using custom colors, I suppose.
 private val ClueCardColorScheme = darkColorScheme(
-    primary = ClueDialogActiveButton,
-    onSurface = ClueDialogInactiveButton,
     onSurfaceVariant = ClueTextOrange,
-    surfaceVariant = ClueBoxBlue
+    surfaceVariant = ClueBoxBlue,
 )
 
 private val ClueButtonColorScheme = darkColorScheme(
@@ -73,7 +71,7 @@ fun JScorekeeperTheme(
 fun ClueCardTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = ClueCardColorScheme,
-        typography = ClueCardTypography,
+        typography = ClueButtonTypography,
         content = content
     )
 }
