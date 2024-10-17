@@ -2,15 +2,7 @@ package com.guillotine.jscorekeeper.composable.game
 
 import android.app.Application
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -18,24 +10,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.googlefonts.Font
-import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.guillotine.jscorekeeper.GameData
+import com.guillotine.jscorekeeper.data.GameData
 import com.guillotine.jscorekeeper.GameScreen
 import com.guillotine.jscorekeeper.R
+import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.viewmodels.GameScreenViewModel
-import com.guillotine.jscorekeeper.GameModes
+import com.guillotine.jscorekeeper.data.GameModes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -109,7 +97,7 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                     viewModel.nextRound()
                 }
             )
-        } else if (viewModel.isShowClueDialog) {
+        } else if (viewModel.clueDialogState != ClueDialogState.NONE) {
             ClueDialog(
                 onDismissRequest = {
                     viewModel.onClueDialogDismiss()
@@ -117,17 +105,21 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                 value = viewModel.currentValue,
                 currency = viewModel.currency,
                 onCorrect = {
-                    viewModel.correctResponse(it)
+                    viewModel.onCorrectResponse(it)
                 },
                 onIncorrect = {
-                    viewModel.incorrectResponse(it)
-                },
-                onDailyDouble = {
-                    viewModel.dailyDouble(it)
+                    viewModel.onIncorrectResponse(it)
                 },
                 onPass = {
-                    viewModel.noAnswer(it)
-                }
+                    viewModel.onPass(it)
+                },
+                onDailyDouble = {
+                    viewModel.onDailyDouble()
+                },
+                isRemainingDailyDouble = viewModel.isRemainingDailyDouble(),
+                isWagerValid = viewModel::isWagerValid,
+                onDailyDoubleResponse = viewModel::dailyDoubleScoreChange,
+                dialogState = viewModel.clueDialogState,
             )
         }
     }
