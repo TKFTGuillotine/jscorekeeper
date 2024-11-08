@@ -28,10 +28,24 @@
     <string name="uk_currency">£</string>
     <string name="australia_currency">$</string>
 
-    <!-- Number of rounds -->
-    <integer name="usa_rounds">3</integer>
-    <integer name="uk_rounds">4</integer>
-    <integer name="australia_rounds">4</integer>
+    <!-- Multiplier by rounds -->
+    <integer-array name="usa_round_multiplier">
+        <item>1</item>
+        <item>2</item>
+        <item>0</item>
+    </integer-array>
+    <integer-array name="uk_round_multiplier">
+        <item>1</item>
+        <item>1</item>
+        <item>2</item>
+        <item>0</item>
+    </integer-array>
+    <integer-array name="australia_round_multiplier">
+        <item>1</item>
+        <item>1</item>
+        <item>2</item>
+        <item>0</item>
+    </integer-array>
 
     <!-- Number of columns on the board -->
     <integer name="usa_columns">6</integer>

@@ -5,9 +5,6 @@
     <string name="play_au_game">Play AU game</string>
     <string name="view_history">View history</string>
     <string name="round">Round</string>
-    <string name="j">J!</string>
-    <string name="double_j">Double J!</string>
-    <string name="final_j">Final J!</string>
     <string name="score">Score</string>
     <string name="next_round">Next round</string>
     <string name="move_to_next_round">Move to next round?</string>
@@ -25,6 +22,14 @@
     <string name="submit">Submit</string>
     <string name="were_you_correct">Were you correct?</string>
     <string name="wager">Wager</string>
+
+    <string-array name="round_names_indexed_by_multiplier">
+        <item>Final J!</item>
+        <item>J!</item>
+        <item>Double J!</item>
+        <item>Triple J!</item>
+        <item>Quadruple J!</item>
+    </string-array>
 
 
     <!-- Content Descriptions -->

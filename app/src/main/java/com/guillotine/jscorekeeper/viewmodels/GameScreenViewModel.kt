@@ -22,7 +22,8 @@ class GameScreenViewModel(gameData: GameData, isResumeGame: Boolean) : ViewModel
         private set
 
     val currency = gameData.currency
-    val rounds = gameData.rounds
+    private val multipliers = gameData.multipliers
+    private val baseMoneyValues = gameData.moneyValues
     private val columns = gameData.columns
 
     fun dailyDoubleScoreChange(wager: Int) {
@@ -63,21 +64,14 @@ class GameScreenViewModel(gameData: GameData, isResumeGame: Boolean) : ViewModel
         clueDialogState = ClueDialogState.NONE
     }
 
-    fun isDoubleJ(): Boolean {
-        return round == rounds - 2
-    }
-
-    fun isFinalJ(): Boolean {
-        return round == rounds - 1
+    fun getMultiplier(): Int {
+        return multipliers[round]
     }
 
     fun nextRound() {
         round++
-        // Rounds is number of rounds. Round is index starting at 0. Second to last round is Double.
-        if (round == rounds - 2) {
-            // map returns a List rather than an IntArray. Must convert.
-            moneyValues = moneyValues.map { it * 2 }.toIntArray()
-        }
+        // map returns a List rather than an IntArray. Must convert.
+        moneyValues = baseMoneyValues.map { it * multipliers[round] }.toIntArray()
         isShowRoundDialog = false
     }
 

@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -53,11 +54,7 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                 title = {
                     Text(
                         "${
-                            if (viewModel.isDoubleJ()) {
-                                stringResource(R.string.double_j)
-                            } else {
-                                stringResource(R.string.j)
-                            }
+                            stringArrayResource(R.array.round_names_indexed_by_multiplier)[viewModel.getMultiplier()]
                         } - ${stringResource(R.string.round)} ${viewModel.round + 1}"
                     )
                 }
@@ -127,9 +124,9 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
 
 fun processGameData(applicationContext: Application, gameMode: GameModes): GameData {
     val rounds = when (gameMode) {
-        GameModes.USA -> applicationContext.resources.getInteger(R.integer.usa_rounds)
-        GameModes.UK -> applicationContext.resources.getInteger(R.integer.uk_rounds)
-        GameModes.AUSTRALIA -> applicationContext.resources.getInteger(R.integer.australia_rounds)
+        GameModes.USA -> applicationContext.resources.getIntArray(R.array.usa_round_multiplier)
+        GameModes.UK -> applicationContext.resources.getIntArray(R.array.uk_round_multiplier)
+        GameModes.AUSTRALIA -> applicationContext.resources.getIntArray(R.array.australia_round_multiplier)
     }
     val columns = when (gameMode) {
         GameModes.USA -> applicationContext.resources.getInteger(R.integer.usa_columns)
