@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -291,10 +292,11 @@ fun ClueDialogWagerContents(
         ) {
             TextField(
                 value = wagerText,
-                onValueChange = { wagerText = it },
+                onValueChange = { wagerText = it.filter { it.isDigit() } },
                 label = { Text(text = stringResource(R.string.enter_wager)) },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done,
                 ),
                 isError = isShowError,
                 prefix = { Text(text = currency) },
