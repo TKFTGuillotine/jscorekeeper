@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,7 +17,6 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -86,8 +84,7 @@ fun ClueDialog(
     isRemainingDailyDouble: Boolean,
     onDailyDouble: () -> Unit,
     isWagerValid: (Int) -> Boolean,
-    onDailyDoubleResponse: (Int) -> Unit,
-    dialogState: ClueDialogState,
+    clueDialogState: ClueDialogState,
     onCorrect: (Int) -> Unit,
     onIncorrect: (Int) -> Unit,
     onPass: (Int) -> Unit,
@@ -106,7 +103,7 @@ fun ClueDialog(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             )
         ) {
-            when (dialogState) {
+            when (clueDialogState) {
                 ClueDialogState.MAIN -> ClueDialogMainContents(
                     onDismissRequest = onDismissRequest,
                     value = value,
@@ -128,7 +125,8 @@ fun ClueDialog(
                     currency = currency,
                     value = value,
                     onDismissRequest = onDismissRequest,
-                    onSubmit = onDailyDoubleResponse
+                    onCorrect = onCorrect,
+                    onIncorrect = onIncorrect
                 )
 
                 ClueDialogState.NONE -> Unit
@@ -335,7 +333,8 @@ fun ClueDialogResponseContents(
     currency: String,
     value: Int,
     onDismissRequest: () -> Unit,
-    onSubmit: (Int) -> Unit
+    onIncorrect: (Int) -> Unit,
+    onCorrect: (Int) -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -390,12 +389,12 @@ fun ClueDialogResponseContents(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(
-                    onClick = { onSubmit(-value) }
+                    onClick = { onIncorrect(value) }
                 ) {
                     Text(text = stringResource(R.string.incorrect))
                 }
                 TextButton(
-                    onClick = { onSubmit(value) }
+                    onClick = { onCorrect(value) }
                 ) {
                     Text(text = stringResource(R.string.correct))
                 }
@@ -501,7 +500,8 @@ fun ClueDialogResponsePreview() {
                 currency = "$",
                 value = 200,
                 onDismissRequest = {},
-                onSubmit = {}
+                onCorrect = {},
+                onIncorrect = {}
             )
         }
 
