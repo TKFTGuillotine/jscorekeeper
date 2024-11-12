@@ -2,14 +2,25 @@ package com.guillotine.jscorekeeper.composable.game
 
 import android.app.Application
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarData
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +36,9 @@ import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.viewmodels.GameScreenViewModel
 import com.guillotine.jscorekeeper.data.GameModes
+import com.guillotine.jscorekeeper.data.GameScreenSnackbarVisuals
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,6 +46,9 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
     val gameMode = gameScreenArgs.gameMode
     val isResumeGame = gameScreenArgs.isResumeGame
     val applicationContext = LocalContext.current.applicationContext
+
+    val noMoreValuesSnackbarVisual =
+        GameScreenSnackbarVisuals(stringResource(R.string.no_remaining_value))
 
     val viewModel = viewModel {
         // It feels wrong to me handling this resource data here, but Google themselves recommend
@@ -43,6 +60,9 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
             isResumeGame
         )
     }
+
+    // Requires Context, so again, shouldn't be done in the ViewModel.
+    val snackbarScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -60,6 +80,9 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                 }
             )
         },
+        snackbarHost = {
+            SnackbarHost(viewModel.snackbarHostState)
+        },
         modifier = Modifier.fillMaxSize(),
     ) { innerPadding ->
 
@@ -70,8 +93,15 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                 currency = viewModel.currency,
                 score = viewModel.score,
                 onClueClick = { viewModel.showClueDialog(it) },
-                //onClueClick = { viewModel.changeScore(it) },
-                onNextRoundClick = { viewModel.showRoundDialog() }
+                onNextRoundClick = { viewModel.showRoundDialog() },
+                isRemainingValue = viewModel::isValueRemaining,
+                onNoRemainingValues = {
+                    showSnackbar(
+                        snackbarScope,
+                        viewModel.snackbarHostState,
+                        noMoreValuesSnackbarVisual
+                    )
+                }
             )
 
             else -> GameBoardVerticalComposable(
@@ -80,9 +110,18 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                 currency = viewModel.currency,
                 score = viewModel.score,
                 onClueClick = { viewModel.showClueDialog(it) },
-                //onClueClick = { viewModel.changeScore(it) },
-                onNextRoundClick = { viewModel.showRoundDialog() }
+                onNextRoundClick = { viewModel.showRoundDialog() },
+                isRemainingValue = viewModel::isValueRemaining,
+                onNoRemainingValues = {
+                    showSnackbar(
+                        snackbarScope,
+                        viewModel.snackbarHostState,
+                        noMoreValuesSnackbarVisual
+                    )
+                }
             )
+
+
         }
 
         if (viewModel.isShowRoundDialog) {
@@ -115,14 +154,13 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                 },
                 isRemainingDailyDouble = viewModel.isRemainingDailyDouble(),
                 isWagerValid = viewModel::isWagerValid,
-                onDailyDoubleResponse = viewModel::dailyDoubleScoreChange,
-                dialogState = viewModel.clueDialogState,
+                clueDialogState = viewModel.clueDialogState,
             )
         }
     }
 }
 
-fun processGameData(applicationContext: Application, gameMode: GameModes): GameData {
+private fun processGameData(applicationContext: Application, gameMode: GameModes): GameData {
     val rounds = when (gameMode) {
         GameModes.USA -> applicationContext.resources.getIntArray(R.array.usa_round_multiplier)
         GameModes.UK -> applicationContext.resources.getIntArray(R.array.uk_round_multiplier)
@@ -145,6 +183,16 @@ fun processGameData(applicationContext: Application, gameMode: GameModes): GameD
     }
 
     return GameData(moneyValues, rounds, currency, columns)
+}
+
+private fun showSnackbar(
+    snackbarScope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
+    snackbarVisuals: SnackbarVisuals
+) {
+    snackbarScope.launch {
+        snackbarHostState.showSnackbar(snackbarVisuals)
+    }
 }
 
 @Preview
