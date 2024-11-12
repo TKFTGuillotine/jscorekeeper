@@ -64,12 +64,10 @@ class GameScreenViewModel(gameData: GameData, isResumeGame: Boolean) : ViewModel
     }
 
     fun showClueDialog(value: Int) {
-        if (columnsPerValue[value] != 0) {
-            currentValue = value
-            clueDialogState = ClueDialogState.MAIN
-        } else {
-            clueDialogState = ClueDialogState.NONE
-        }
+        // For tracking internal state.
+        isDailyDouble = false
+        currentValue = value
+        clueDialogState = ClueDialogState.MAIN
     }
 
     fun onRoundDialogDismiss() {
@@ -77,8 +75,6 @@ class GameScreenViewModel(gameData: GameData, isResumeGame: Boolean) : ViewModel
     }
 
     fun onClueDialogDismiss() {
-        // For tracking internal state.
-        isDailyDouble = false
         clueDialogState = ClueDialogState.NONE
     }
 
@@ -97,7 +93,7 @@ class GameScreenViewModel(gameData: GameData, isResumeGame: Boolean) : ViewModel
         isShowRoundDialog = false
     }
 
-    fun onCorrectResponse(value: Int) {
+    fun onCorrectResponse(value: Int): Boolean {
         score += value
         if (isDailyDouble) {
             remainingDailyDoubles--
@@ -113,9 +109,10 @@ class GameScreenViewModel(gameData: GameData, isResumeGame: Boolean) : ViewModel
             }
         }
         onClueDialogDismiss()
+        return (isDailyDouble && remainingDailyDoubles != 0)
     }
 
-    fun onIncorrectResponse(value: Int) {
+    fun onIncorrectResponse(value: Int): Boolean {
         score -= value
         if (isDailyDouble) {
             remainingDailyDoubles--
@@ -129,6 +126,7 @@ class GameScreenViewModel(gameData: GameData, isResumeGame: Boolean) : ViewModel
             }
         }
         onClueDialogDismiss()
+        return (isDailyDouble && remainingDailyDoubles != 0)
     }
 
     fun onPass(value: Int) {
