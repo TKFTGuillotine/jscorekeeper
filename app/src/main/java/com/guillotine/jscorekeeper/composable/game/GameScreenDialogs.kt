@@ -33,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.guillotine.jscorekeeper.R
@@ -85,9 +84,10 @@ fun ClueDialog(
     onDailyDouble: () -> Unit,
     isWagerValid: (Int) -> Boolean,
     clueDialogState: ClueDialogState,
-    onCorrect: (Int) -> Unit,
-    onIncorrect: (Int) -> Unit,
+    onCorrect: (Int) -> Boolean,
+    onIncorrect: (Int) -> Boolean,
     onPass: (Int) -> Unit,
+    onNoMoreDailyDoubles: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -126,7 +126,8 @@ fun ClueDialog(
                     value = value,
                     onDismissRequest = onDismissRequest,
                     onCorrect = onCorrect,
-                    onIncorrect = onIncorrect
+                    onIncorrect = onIncorrect,
+                    onNoMoreDailyDoubles = {onNoMoreDailyDoubles()}
                 )
 
                 ClueDialogState.NONE -> Unit
@@ -142,9 +143,9 @@ fun ClueDialogMainContents(
     currency: String,
     isRemainingDailyDouble: Boolean,
     onDailyDouble: () -> Unit,
-    onCorrect: (Int) -> Unit,
-    onIncorrect: (Int) -> Unit,
-    onPass: (Int) -> Unit
+    onCorrect: (Int) -> Boolean,
+    onIncorrect: (Int) -> Boolean,
+    onPass: (Int) -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -192,7 +193,7 @@ fun ClueDialogMainContents(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(
-                onClick = { onCorrect(value) },
+                onClick = {onCorrect(value)},
                 modifier = Modifier.weight(1f),
             ) {
                 Text(
@@ -200,7 +201,7 @@ fun ClueDialogMainContents(
                 )
             }
             TextButton(
-                onClick = { onIncorrect(value) },
+                onClick = {onIncorrect(value)},
                 modifier = Modifier.weight(1f),
 
                 ) {
@@ -218,7 +219,7 @@ fun ClueDialogMainContents(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(
-                onClick = { onPass(value) },
+                onClick = {onPass(value)},
                 modifier = Modifier.weight(1f),
             ) {
                 Text(
@@ -333,8 +334,9 @@ fun ClueDialogResponseContents(
     currency: String,
     value: Int,
     onDismissRequest: () -> Unit,
-    onIncorrect: (Int) -> Unit,
-    onCorrect: (Int) -> Unit
+    onIncorrect: (Int) -> Boolean,
+    onCorrect: (Int) -> Boolean,
+    onNoMoreDailyDoubles: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -389,12 +391,12 @@ fun ClueDialogResponseContents(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(
-                    onClick = { onIncorrect(value) }
+                    onClick = { if (!onIncorrect(value)) {onNoMoreDailyDoubles()} }
                 ) {
                     Text(text = stringResource(R.string.incorrect))
                 }
                 TextButton(
-                    onClick = { onCorrect(value) }
+                    onClick = { if (!onCorrect(value)) {onNoMoreDailyDoubles()} }
                 ) {
                     Text(text = stringResource(R.string.correct))
                 }
@@ -403,6 +405,7 @@ fun ClueDialogResponseContents(
     }
 }
 
+/*
 @Preview
 @Composable
 fun NextRoundDialogPreview() {
@@ -506,4 +509,4 @@ fun ClueDialogResponsePreview() {
         }
 
     }
-}
+}*/
