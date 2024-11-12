@@ -2,15 +2,10 @@ package com.guillotine.jscorekeeper.composable.game
 
 import android.app.Application
 import android.content.res.Configuration
-import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarVisuals
@@ -18,8 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -47,8 +40,8 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
     val isResumeGame = gameScreenArgs.isResumeGame
     val applicationContext = LocalContext.current.applicationContext
 
-    val noMoreValuesSnackbarVisual =
-        GameScreenSnackbarVisuals(stringResource(R.string.no_remaining_value))
+    val noMoreDailyDoublesSnackbarVisuals =
+        GameScreenSnackbarVisuals(stringResource(R.string.no_remaining_daily_doubles))
 
     val viewModel = viewModel {
         // It feels wrong to me handling this resource data here, but Google themselves recommend
@@ -95,13 +88,6 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                 onClueClick = { viewModel.showClueDialog(it) },
                 onNextRoundClick = { viewModel.showRoundDialog() },
                 isRemainingValue = viewModel::isValueRemaining,
-                onNoRemainingValues = {
-                    showSnackbar(
-                        snackbarScope,
-                        viewModel.snackbarHostState,
-                        noMoreValuesSnackbarVisual
-                    )
-                }
             )
 
             else -> GameBoardVerticalComposable(
@@ -112,13 +98,6 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                 onClueClick = { viewModel.showClueDialog(it) },
                 onNextRoundClick = { viewModel.showRoundDialog() },
                 isRemainingValue = viewModel::isValueRemaining,
-                onNoRemainingValues = {
-                    showSnackbar(
-                        snackbarScope,
-                        viewModel.snackbarHostState,
-                        noMoreValuesSnackbarVisual
-                    )
-                }
             )
 
 
@@ -155,6 +134,13 @@ fun GameScreenComposable(navController: NavHostController, gameScreenArgs: GameS
                 isRemainingDailyDouble = viewModel.isRemainingDailyDouble(),
                 isWagerValid = viewModel::isWagerValid,
                 clueDialogState = viewModel.clueDialogState,
+                onNoMoreDailyDoubles = {
+                    showSnackbar(
+                        snackbarScope,
+                        viewModel.snackbarHostState,
+                        noMoreDailyDoublesSnackbarVisuals
+                    )
+                }
             )
         }
     }
