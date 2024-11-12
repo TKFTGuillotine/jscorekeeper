@@ -26,7 +26,9 @@ fun GameBoardVerticalComposable(
     currency: String,
     score: Int,
     onNextRoundClick: () -> Unit,
-    onClueClick: (Int) -> Unit
+    onClueClick: (Int) -> Unit,
+    onNoRemainingValues: () -> Unit,
+    isRemainingValue: (Int) -> Boolean
 ) {
     // For spacing buttons
     val verticalSpacing = 8.dp
@@ -54,7 +56,11 @@ fun GameBoardVerticalComposable(
                     text = "${currency}$it",
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        onClueClick(it)
+                        if (isRemainingValue(it)) {
+                            onClueClick(it)
+                        } else {
+                            onNoRemainingValues()
+                        }
                     }
                 )
                 Spacer(Modifier.size(verticalSpacing))
@@ -75,7 +81,7 @@ fun GameBoardVerticalComposable(
                 Text("${stringResource(R.string.score)}: -${currency}${Math.abs(score)}")
             }
             Button(
-                onClick = {onNextRoundClick()}
+                onClick = { onNextRoundClick() }
             ) {
                 Text(text = stringResource(R.string.next_round))
             }

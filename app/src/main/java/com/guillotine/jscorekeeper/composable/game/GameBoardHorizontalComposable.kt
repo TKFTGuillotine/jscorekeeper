@@ -28,7 +28,9 @@ fun GameBoardHorizontalComposable(
     currency: String,
     score: Int,
     onNextRoundClick: () -> Unit,
-    onClueClick: (Int) -> Unit
+    onClueClick: (Int) -> Unit,
+    onNoRemainingValues: () -> Unit,
+    isRemainingValue: (Int) -> Boolean
 ) {
     // For spacing buttons
     val horizontalSpacing = 8.dp
@@ -59,7 +61,7 @@ fun GameBoardHorizontalComposable(
                 Text("${stringResource(R.string.score)}: -${currency}${Math.abs(score)}")
             }
             Button(
-                onClick = {onNextRoundClick()}
+                onClick = { onNextRoundClick() }
             ) {
                 Text(text = stringResource(R.string.next_round))
             }
@@ -79,8 +81,17 @@ fun GameBoardHorizontalComposable(
             moneyValues.forEach {
                 GameBoardButton(
                     text = "${currency}$it",
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = {onClueClick(it)}
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    onClick = {
+                        if (isRemainingValue(it)) {
+                            onClueClick(it)
+                        } else {
+                            onNoRemainingValues()
+                        }
+                    }
+
                 )
                 Spacer(Modifier.size(horizontalSpacing))
             }
