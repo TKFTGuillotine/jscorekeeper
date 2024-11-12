@@ -20,6 +20,7 @@ import com.guillotine.jscorekeeper.ui.theme.ClueButtonTheme
 fun GameBoardButton(
     text: String,
     modifier: Modifier? = null,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
 
@@ -27,7 +28,8 @@ fun GameBoardButton(
         Button(
             shape = RoundedCornerShape(24.dp),
             modifier = modifier?.fillMaxWidth() ?: Modifier.fillMaxWidth(),
-            onClick = onClick
+            onClick = onClick,
+            enabled = enabled
         ) {
             Text(
                 text = text,
@@ -44,5 +46,15 @@ fun GameBoardButtonPreview() {
     GameBoardButton(
         text = "$200",
         onClick = {}
+    )
+}
+
+@Preview
+@Composable
+fun GameBoardButtonDisabledPreview() {
+    GameBoardButton(
+        text = "$200",
+        onClick = {},
+        enabled = false
     )
 }

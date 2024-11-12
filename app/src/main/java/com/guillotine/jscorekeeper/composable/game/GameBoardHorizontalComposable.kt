@@ -29,7 +29,6 @@ fun GameBoardHorizontalComposable(
     score: Int,
     onNextRoundClick: () -> Unit,
     onClueClick: (Int) -> Unit,
-    onNoRemainingValues: () -> Unit,
     isRemainingValue: (Int) -> Boolean
 ) {
     // For spacing buttons
@@ -84,12 +83,9 @@ fun GameBoardHorizontalComposable(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight(),
+                    enabled = isRemainingValue(it),
                     onClick = {
-                        if (isRemainingValue(it)) {
-                            onClueClick(it)
-                        } else {
-                            onNoRemainingValues()
-                        }
+                        onClueClick(it)
                     }
 
                 )

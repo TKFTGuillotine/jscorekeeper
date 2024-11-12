@@ -27,7 +27,6 @@ fun GameBoardVerticalComposable(
     score: Int,
     onNextRoundClick: () -> Unit,
     onClueClick: (Int) -> Unit,
-    onNoRemainingValues: () -> Unit,
     isRemainingValue: (Int) -> Boolean
 ) {
     // For spacing buttons
@@ -56,12 +55,9 @@ fun GameBoardVerticalComposable(
                     text = "${currency}$it",
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        if (isRemainingValue(it)) {
-                            onClueClick(it)
-                        } else {
-                            onNoRemainingValues()
-                        }
-                    }
+                        onClueClick(it)
+                    },
+                    enabled = isRemainingValue(it)
                 )
                 Spacer(Modifier.size(verticalSpacing))
             }
