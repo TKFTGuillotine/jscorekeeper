@@ -22,6 +22,7 @@
     <string name="submit">Submit</string>
     <string name="were_you_correct">Were you correct?</string>
     <string name="wager">Wager</string>
+    <string name="no_remaining_value">No remaining clues of that value.</string>
 
     <string-array name="round_names_indexed_by_multiplier">
         <item>Final J!</item>
