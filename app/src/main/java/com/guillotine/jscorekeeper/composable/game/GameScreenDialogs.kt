@@ -33,6 +33,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
+import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.guillotine.jscorekeeper.R
@@ -405,7 +408,10 @@ fun ClueDialogResponseContents(
     }
 }
 
-/*
+fun dummyCallback (arg: Int): Boolean {
+    return true
+}
+
 @Preview
 @Composable
 fun NextRoundDialogPreview() {
@@ -431,9 +437,11 @@ fun ClueDialogMainPreview() {
                 currency = "$",
                 isRemainingDailyDouble = false,
                 onDailyDouble = {},
-                onCorrect = {},
-                onIncorrect = {},
-                onPass = {}
+                // :: is a function reference operator, allowing the passage of this function as an
+                // argument.
+                onCorrect = ::dummyCallback,
+                onIncorrect = ::dummyCallback,
+                onPass = ::dummyCallback
             )
 
         }
@@ -503,10 +511,11 @@ fun ClueDialogResponsePreview() {
                 currency = "$",
                 value = 200,
                 onDismissRequest = {},
-                onCorrect = {},
-                onIncorrect = {}
+                onCorrect = ::dummyCallback,
+                onIncorrect = ::dummyCallback,
+                onNoMoreDailyDoubles = {}
             )
         }
 
     }
-}*/
+}

@@ -33,9 +33,12 @@ private val LightColorScheme = lightColorScheme(
 )
 
 // Wow, did this ever take too long to figure out! The joys of using custom colors, I suppose.
-private val ClueCardColorScheme = darkColorScheme(
-    onSurfaceVariant = ClueTextOrange,
-    surfaceVariant = ClueBoxBlue,
+// For some reason this doesn't work when using a dark color scheme. I truly have no idea why.
+private val ClueCardColorScheme = lightColorScheme(
+    onSurface = ClueTextOrange,
+    surfaceContainerHighest = ClueBoxBlue
+
+
 )
 
 private val ClueButtonColorScheme = darkColorScheme(
