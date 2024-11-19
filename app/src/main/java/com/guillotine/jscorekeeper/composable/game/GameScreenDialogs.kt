@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -17,8 +21,10 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -30,15 +36,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewDynamicColors
-import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.guillotine.jscorekeeper.R
+import com.guillotine.jscorekeeper.data.ClueDialogOptionStringIDs
 import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.ui.theme.ClueCardTheme
 
@@ -79,7 +85,53 @@ fun NextRoundDialog(
 }
 
 @Composable
+fun ClueDialogOptionsList(
+    currentSelectedOption: ClueDialogOptionStringIDs,
+    onOptionSelected: (ClueDialogOptionStringIDs) -> Unit,
+    isRemainingDailyDouble: Boolean
+) {
+    Column() {
+        HorizontalDivider()
+        // selectableGroup used for accessibility reasons.
+        Column(Modifier.selectableGroup()) {
+            // Could I have stored this as a list in the XML? Probably. But I feel like it's going
+            // to be nicer to handle this in the ViewModel as an enum than as a bunch of strings.
+            ClueDialogOptionStringIDs.entries.forEach { stringID ->
+                if (isRemainingDailyDouble || stringID != ClueDialogOptionStringIDs.DAILY_DOUBLE) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .selectable(
+                                selected = (currentSelectedOption == stringID),
+                                onClick = { onOptionSelected(stringID) },
+                                role = Role.RadioButton
+                            )
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (currentSelectedOption == stringID),
+                            // Set to null for accessibility reasons.
+                            onClick = null
+                        )
+                        Text(
+                            text = stringResource(stringID.stringResourceID),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+                }
+            }
+        }
+        HorizontalDivider()
+    }
+}
+
+@Composable
 fun ClueDialog(
+    onOptionSelected: (ClueDialogOptionStringIDs) -> Unit,
+    currentSelectedOption: ClueDialogOptionStringIDs,
     onDismissRequest: () -> Unit,
     value: Int,
     currency: String,
@@ -108,6 +160,8 @@ fun ClueDialog(
         ) {
             when (clueDialogState) {
                 ClueDialogState.MAIN -> ClueDialogMainContents(
+                    onOptionSelected,
+                    currentSelectedOption,
                     onDismissRequest = onDismissRequest,
                     value = value,
                     currency = currency,
@@ -130,7 +184,7 @@ fun ClueDialog(
                     onDismissRequest = onDismissRequest,
                     onCorrect = onCorrect,
                     onIncorrect = onIncorrect,
-                    onNoMoreDailyDoubles = {onNoMoreDailyDoubles()}
+                    onNoMoreDailyDoubles = { onNoMoreDailyDoubles() }
                 )
 
                 ClueDialogState.NONE -> Unit
@@ -141,6 +195,8 @@ fun ClueDialog(
 
 @Composable
 fun ClueDialogMainContents(
+    onOptionSelected: (ClueDialogOptionStringIDs) -> Unit,
+    currentSelectedOption: ClueDialogOptionStringIDs,
     onDismissRequest: () -> Unit,
     value: Int,
     currency: String,
@@ -155,9 +211,10 @@ fun ClueDialogMainContents(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxSize()
-            // Per M3 spec, the correct amount of padding.
+            // Per M3 spec, the correct amount of perimeter padding.
             .padding(24.dp)
     ) {
+        // Header/Card row
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -173,7 +230,9 @@ fun ClueDialogMainContents(
             ClueCardTheme {
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(top = 8.dp, bottom = 8.dp)
+                            .fillMaxWidth(),
                         text = "${currency}${value}",
                         style = MaterialTheme.typography.headlineSmall,
                         // Again, this breaks spec, but in this case I think it looks best this way.
@@ -184,6 +243,18 @@ fun ClueDialogMainContents(
             }
         }
         Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ClueDialogOptionsList(
+                currentSelectedOption = currentSelectedOption,
+                onOptionSelected = onOptionSelected,
+                isRemainingDailyDouble = isRemainingDailyDouble
+            )
+        }
+        // First row of buttons
+        /*Row(
             modifier = Modifier
                 .fillMaxWidth()
                 // Technically, M3 spec suggests the button section have a 24dp padding at
@@ -196,7 +267,7 @@ fun ClueDialogMainContents(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(
-                onClick = {onCorrect(value)},
+                onClick = { onCorrect(value) },
                 modifier = Modifier.weight(1f),
             ) {
                 Text(
@@ -204,7 +275,7 @@ fun ClueDialogMainContents(
                 )
             }
             TextButton(
-                onClick = {onIncorrect(value)},
+                onClick = { onIncorrect(value) },
                 modifier = Modifier.weight(1f),
 
                 ) {
@@ -213,6 +284,7 @@ fun ClueDialogMainContents(
                 )
             }
         }
+        // Second row of buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -222,7 +294,7 @@ fun ClueDialogMainContents(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(
-                onClick = {onPass(value)},
+                onClick = { onPass(value) },
                 modifier = Modifier.weight(1f),
             ) {
                 Text(
@@ -238,18 +310,47 @@ fun ClueDialogMainContents(
                     text = stringResource(R.string.daily_double)
                 )
             }
-        }
+        }*/
+        // Cancel row
+        /*        Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        // Per M3 spec, the correct amount of padding for the bottom button row.
+                        .padding(top = 24.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
+                        onClick = { onDismissRequest() },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.cancel))
+                    }
+                }*/
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
+                .fillMaxWidth()
+                // Per M3 spec, the correct amount of padding for the bottom button row.
+                .padding(top = 24.dp),
+            horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(
-                onClick = { onDismissRequest() },
-                modifier = Modifier.weight(1f)
+                onClick = { onDismissRequest() }
             ) {
                 Text(text = stringResource(R.string.cancel))
+            }
+            TextButton(
+                onClick = {
+                    when (currentSelectedOption) {
+                        ClueDialogOptionStringIDs.CORRECT -> onCorrect(value)
+                        ClueDialogOptionStringIDs.INCORRECT -> onIncorrect(value)
+                        ClueDialogOptionStringIDs.PASS -> onPass(value)
+                        ClueDialogOptionStringIDs.DAILY_DOUBLE -> onDailyDouble()
+                    }
+                }
+            ) {
+                Text(text = stringResource(R.string.confirm_continue))
             }
         }
     }
@@ -394,12 +495,20 @@ fun ClueDialogResponseContents(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(
-                    onClick = { if (!onIncorrect(value)) {onNoMoreDailyDoubles()} }
+                    onClick = {
+                        if (!onIncorrect(value)) {
+                            onNoMoreDailyDoubles()
+                        }
+                    }
                 ) {
                     Text(text = stringResource(R.string.incorrect))
                 }
                 TextButton(
-                    onClick = { if (!onCorrect(value)) {onNoMoreDailyDoubles()} }
+                    onClick = {
+                        if (!onCorrect(value)) {
+                            onNoMoreDailyDoubles()
+                        }
+                    }
                 ) {
                     Text(text = stringResource(R.string.correct))
                 }
@@ -408,8 +517,18 @@ fun ClueDialogResponseContents(
     }
 }
 
-fun dummyCallback (arg: Int): Boolean {
+fun dummyCallback(arg: Int): Boolean {
     return true
+}
+
+@Preview
+@Composable
+fun ClueDialogOptionsListPreview() {
+    ClueDialogOptionsList(
+        currentSelectedOption = ClueDialogOptionStringIDs.CORRECT,
+        onOptionSelected = {},
+        isRemainingDailyDouble = true
+    )
 }
 
 @Preview
@@ -435,13 +554,15 @@ fun ClueDialogMainPreview() {
                 onDismissRequest = {},
                 value = 200,
                 currency = "$",
-                isRemainingDailyDouble = false,
+                isRemainingDailyDouble = true,
                 onDailyDouble = {},
                 // :: is a function reference operator, allowing the passage of this function as an
                 // argument.
                 onCorrect = ::dummyCallback,
                 onIncorrect = ::dummyCallback,
-                onPass = ::dummyCallback
+                onPass = ::dummyCallback,
+                currentSelectedOption = ClueDialogOptionStringIDs.CORRECT,
+                onOptionSelected = {}
             )
 
         }

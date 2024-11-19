@@ -16,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.guillotine.jscorekeeper.data.ClueDialogOptionStringIDs
 import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.data.GameData
 
@@ -79,6 +80,9 @@ class GameScreenViewModel (
     // Doesn't really need to be persisted. If the app has been cleaned from memory, the Snackbar
     // will have been long past gone anyways.
     var snackbarHostState by mutableStateOf(SnackbarHostState())
+        private set
+    var currentSelectedClueDialogOption by savedStateHandle.saveable { mutableStateOf(
+        ClueDialogOptionStringIDs.CORRECT) }
         private set
 
     val currency = savedGameData.currency
@@ -155,7 +159,12 @@ class GameScreenViewModel (
         // For tracking internal state.
         isDailyDouble = false
         currentValue = value
+        currentSelectedClueDialogOption = ClueDialogOptionStringIDs.CORRECT
         clueDialogState = ClueDialogState.MAIN
+    }
+
+    fun onClueDialogOptionSelected(option: ClueDialogOptionStringIDs) {
+        currentSelectedClueDialogOption = option
     }
 
     fun onRoundDialogDismiss() {

@@ -1,6 +1,5 @@
 package com.guillotine.jscorekeeper.composable.game
 
-import android.app.Application
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,20 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.guillotine.jscorekeeper.data.GameData
-import com.guillotine.jscorekeeper.GameScreen
 import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.viewmodels.GameScreenViewModel
-import com.guillotine.jscorekeeper.data.GameModes
 import com.guillotine.jscorekeeper.data.GameScreenSnackbarVisuals
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -127,7 +118,11 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
                         viewModel.snackbarHostState,
                         noMoreDailyDoublesSnackbarVisuals
                     )
-                }
+                },
+                onOptionSelected = {
+                    viewModel.onClueDialogOptionSelected(it)
+                },
+                currentSelectedOption = viewModel.currentSelectedClueDialogOption
             )
         }
     }
