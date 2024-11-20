@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
@@ -108,7 +109,6 @@ fun ClueDialog(
             modifier = Modifier
                 // Per M3 spec, the largest possible width.
                 .width(560.dp)
-                .height(IntrinsicSize.Max)
                 .animateContentSize(),
             // Per M3 spec, the correct amount of roundness.
             shape = RoundedCornerShape(28.dp),
@@ -173,15 +173,16 @@ fun ClueDialogMainContents(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .fillMaxSize()
+            .height(IntrinsicSize.Max)
             // Per M3 spec, the correct amount of perimeter padding.
             .padding(24.dp)
     ) {
         // Header/Card row
         Row(
             modifier = Modifier
+                // Seems like the smallest I can get it.
+                .height(90.dp)
                 .fillMaxWidth()
-                .height(IntrinsicSize.Max)
                 // Per M3 spec, the correct amount of title padding.
                 .padding(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 16.dp),
             // Per M3 spec, titles are left aligned if there is no icon. That said, I've
@@ -192,8 +193,9 @@ fun ClueDialogMainContents(
         ) {
             ClueCardComposable(currency = currency, value = value)
         }
+        // Options row
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().weight(1f),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -206,6 +208,8 @@ fun ClueDialogMainContents(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                // Per M3 spec, 40dp is the height of a button, +24.dp for the padding.
+                .height(64.dp)
                 // Per M3 spec, the correct amount of padding for the bottom button row.
                 .padding(top = 24.dp),
             horizontalArrangement = Arrangement.End,
