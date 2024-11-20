@@ -13,7 +13,9 @@ data class GameScreen(
 )
 
 @Serializable
-object ResultsScreen
+data class ResultsScreen (
+    val score: Int,
+)
 
 @Serializable
 object PastGamesListScreen
