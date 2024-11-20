@@ -58,25 +58,46 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
     ) { innerPadding ->
 
         when (LocalConfiguration.current.orientation) {
-            Configuration.ORIENTATION_LANDSCAPE -> GameBoardHorizontalComposable(
-                innerPadding = innerPadding,
-                moneyValues = viewModel.moneyValues,
-                currency = viewModel.currency,
-                score = viewModel.score,
-                onClueClick = { viewModel.showClueDialog(it) },
-                onNextRoundClick = { viewModel.showRoundDialog() },
-                isRemainingValue = viewModel::isValueRemaining,
-            )
+            Configuration.ORIENTATION_LANDSCAPE ->
+                if (viewModel.isFinal) {
 
-            else -> GameBoardVerticalComposable(
-                innerPadding = innerPadding,
-                moneyValues = viewModel.moneyValues,
-                currency = viewModel.currency,
-                score = viewModel.score,
-                onClueClick = { viewModel.showClueDialog(it) },
-                onNextRoundClick = { viewModel.showRoundDialog() },
-                isRemainingValue = viewModel::isValueRemaining,
-            )
+                } else {
+                    GameBoardHorizontalComposable(
+                        innerPadding = innerPadding,
+                        moneyValues = viewModel.moneyValues,
+                        currency = viewModel.currency,
+                        score = viewModel.score,
+                        onClueClick = { viewModel.showClueDialog(it) },
+                        onNextRoundClick = { viewModel.showRoundDialog() },
+                        isRemainingValue = viewModel::isValueRemaining,
+                    )
+                }
+
+            else ->
+                if (viewModel.isFinal) {
+                    FinalVerticalComposable(
+                        innerPadding = innerPadding,
+                        score = viewModel.score,
+                        currentSelectedOption = viewModel.currentSelectedClueDialogOption,
+                        onOptionSelected = {viewModel.onClueDialogOptionSelected(it)},
+                        wagerText = viewModel.wagerFieldText,
+                        setWagerText = {viewModel.wagerFieldText = it},
+                        isShowError = viewModel.isShowWagerFieldError,
+                        currency = viewModel.currency,
+                        submitFinalWager = viewModel::submitFinalWager,
+                        navController = navController
+                    )
+                } else {
+                    GameBoardVerticalComposable(
+                        innerPadding = innerPadding,
+                        moneyValues = viewModel.moneyValues,
+                        currency = viewModel.currency,
+                        score = viewModel.score,
+                        onClueClick = { viewModel.showClueDialog(it) },
+                        onNextRoundClick = { viewModel.showRoundDialog() },
+                        isRemainingValue = viewModel::isValueRemaining,
+                    )
+                }
 
 
         }
@@ -109,7 +130,7 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
                 onDailyDouble = {
                     viewModel.onDailyDouble()
                 },
-                isRemainingDailyDouble = viewModel.isRemainingDailyDouble(),
+                listOfOptions = viewModel.getClueDialogOptions(),
                 isWagerValid = viewModel::isWagerValid,
                 clueDialogState = viewModel.clueDialogState,
                 onNoMoreDailyDoubles = {
@@ -122,7 +143,11 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
                 onOptionSelected = {
                     viewModel.onClueDialogOptionSelected(it)
                 },
-                currentSelectedOption = viewModel.currentSelectedClueDialogOption
+                currentSelectedOption = viewModel.currentSelectedClueDialogOption,
+                wagerText = viewModel.wagerFieldText,
+                setWagerText = {viewModel.wagerFieldText = it},
+                isShowError = viewModel.isShowWagerFieldError,
+                setIsShowError = {viewModel.isShowWagerFieldError = it}
             )
         }
     }
