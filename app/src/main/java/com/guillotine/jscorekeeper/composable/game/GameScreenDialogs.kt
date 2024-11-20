@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,7 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.guillotine.jscorekeeper.R
-import com.guillotine.jscorekeeper.data.ClueDialogOptionStringIDs
+import com.guillotine.jscorekeeper.composable.general.RadioButtonList
+import com.guillotine.jscorekeeper.data.RadioButtonOptions
 import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.ui.theme.ClueCardTheme
 
@@ -85,64 +84,24 @@ fun NextRoundDialog(
 }
 
 @Composable
-fun ClueDialogOptionsList(
-    currentSelectedOption: ClueDialogOptionStringIDs,
-    onOptionSelected: (ClueDialogOptionStringIDs) -> Unit,
-    isRemainingDailyDouble: Boolean
-) {
-    Column() {
-        HorizontalDivider()
-        // selectableGroup used for accessibility reasons.
-        Column(Modifier.selectableGroup()) {
-            // Could I have stored this as a list in the XML? Probably. But I feel like it's going
-            // to be nicer to handle this in the ViewModel as an enum than as a bunch of strings.
-            ClueDialogOptionStringIDs.entries.forEach { stringID ->
-                if (isRemainingDailyDouble || stringID != ClueDialogOptionStringIDs.DAILY_DOUBLE) {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .selectable(
-                                selected = (currentSelectedOption == stringID),
-                                onClick = { onOptionSelected(stringID) },
-                                role = Role.RadioButton
-                            )
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = (currentSelectedOption == stringID),
-                            // Set to null for accessibility reasons.
-                            onClick = null
-                        )
-                        Text(
-                            text = stringResource(stringID.stringResourceID),
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
-                    }
-                }
-            }
-        }
-        HorizontalDivider()
-    }
-}
-
-@Composable
 fun ClueDialog(
-    onOptionSelected: (ClueDialogOptionStringIDs) -> Unit,
-    currentSelectedOption: ClueDialogOptionStringIDs,
+    onOptionSelected: (RadioButtonOptions) -> Unit,
+    currentSelectedOption: RadioButtonOptions,
     onDismissRequest: () -> Unit,
     value: Int,
     currency: String,
-    isRemainingDailyDouble: Boolean,
+    listOfOptions: List<RadioButtonOptions>,
     onDailyDouble: () -> Unit,
     isWagerValid: (Int) -> Boolean,
     clueDialogState: ClueDialogState,
     onCorrect: (Int) -> Boolean,
     onIncorrect: (Int) -> Boolean,
     onPass: (Int) -> Unit,
-    onNoMoreDailyDoubles: () -> Unit
+    onNoMoreDailyDoubles: () -> Unit,
+    wagerText: String,
+    setWagerText: (String) -> Unit,
+    isShowError: Boolean,
+    setIsShowError: (Boolean) -> Unit
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -165,7 +124,7 @@ fun ClueDialog(
                     onDismissRequest = onDismissRequest,
                     value = value,
                     currency = currency,
-                    isRemainingDailyDouble = isRemainingDailyDouble,
+                    listOfOptions = listOfOptions,
                     onDailyDouble = { onDailyDouble() },
                     onCorrect = onCorrect,
                     onIncorrect = onIncorrect,
@@ -175,7 +134,11 @@ fun ClueDialog(
                 ClueDialogState.DAILY_DOUBLE_WAGER -> ClueDialogWagerContents(
                     currency = currency,
                     isWagerValid = isWagerValid,
-                    onDismissRequest = onDismissRequest
+                    onDismissRequest = onDismissRequest,
+                    wagerText = wagerText,
+                    setWagerText = setWagerText,
+                    isShowError = isShowError,
+                    setIsShowError = setIsShowError
                 )
 
                 ClueDialogState.DAILY_DOUBLE_RESPONSE -> ClueDialogResponseContents(
@@ -195,12 +158,12 @@ fun ClueDialog(
 
 @Composable
 fun ClueDialogMainContents(
-    onOptionSelected: (ClueDialogOptionStringIDs) -> Unit,
-    currentSelectedOption: ClueDialogOptionStringIDs,
+    onOptionSelected: (RadioButtonOptions) -> Unit,
+    currentSelectedOption: RadioButtonOptions,
     onDismissRequest: () -> Unit,
     value: Int,
     currency: String,
-    isRemainingDailyDouble: Boolean,
+    listOfOptions: List<RadioButtonOptions>,
     onDailyDouble: () -> Unit,
     onCorrect: (Int) -> Boolean,
     onIncorrect: (Int) -> Boolean,
@@ -227,106 +190,19 @@ fun ClueDialogMainContents(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ClueCardTheme {
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        modifier = Modifier
-                            .padding(top = 8.dp, bottom = 8.dp)
-                            .fillMaxWidth(),
-                        text = "${currency}${value}",
-                        style = MaterialTheme.typography.headlineSmall,
-                        // Again, this breaks spec, but in this case I think it looks best this way.
-                        textAlign = TextAlign.Center
-
-                    )
-                }
-            }
+            ClueCardComposable(currency = currency, value = value)
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ClueDialogOptionsList(
+            RadioButtonList(
                 currentSelectedOption = currentSelectedOption,
                 onOptionSelected = onOptionSelected,
-                isRemainingDailyDouble = isRemainingDailyDouble
+                listOfOptions = listOfOptions
             )
         }
-        // First row of buttons
-        /*Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                // Technically, M3 spec suggests the button section have a 24dp padding at
-                // the top, but that usually has content and not title preceding it. So I'm not
-                // sure what the right thing to do here is, but I'm adding 8dp on the top to the
-                // 16dp from the title. The trailing 24dp is to spec, however.
-                .padding(start = 0.dp, top = 8.dp, end = 0.dp, bottom = 24.dp),
-            // This is not to spec, but that's merely because I think this will be more usable.
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextButton(
-                onClick = { onCorrect(value) },
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(
-                    text = stringResource(R.string.correct),
-                )
-            }
-            TextButton(
-                onClick = { onIncorrect(value) },
-                modifier = Modifier.weight(1f),
-
-                ) {
-                Text(
-                    text = stringResource(R.string.incorrect),
-                )
-            }
-        }
-        // Second row of buttons
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp),
-            // This is not to spec, but that's merely because I think this will be more usable.
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextButton(
-                onClick = { onPass(value) },
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(
-                    text = stringResource(R.string.pass),
-                )
-            }
-            TextButton(
-                onClick = { onDailyDouble() },
-                modifier = Modifier.weight(1f),
-                enabled = isRemainingDailyDouble,
-            ) {
-                Text(
-                    text = stringResource(R.string.daily_double)
-                )
-            }
-        }*/
-        // Cancel row
-        /*        Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        // Per M3 spec, the correct amount of padding for the bottom button row.
-                        .padding(top = 24.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(
-                        onClick = { onDismissRequest() },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(text = stringResource(R.string.cancel))
-                    }
-                }*/
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -343,10 +219,10 @@ fun ClueDialogMainContents(
             TextButton(
                 onClick = {
                     when (currentSelectedOption) {
-                        ClueDialogOptionStringIDs.CORRECT -> onCorrect(value)
-                        ClueDialogOptionStringIDs.INCORRECT -> onIncorrect(value)
-                        ClueDialogOptionStringIDs.PASS -> onPass(value)
-                        ClueDialogOptionStringIDs.DAILY_DOUBLE -> onDailyDouble()
+                        RadioButtonOptions.CORRECT -> onCorrect(value)
+                        RadioButtonOptions.INCORRECT -> onIncorrect(value)
+                        RadioButtonOptions.PASS -> onPass(value)
+                        RadioButtonOptions.DAILY_DOUBLE -> onDailyDouble()
                     }
                 }
             ) {
@@ -360,10 +236,12 @@ fun ClueDialogMainContents(
 fun ClueDialogWagerContents(
     currency: String,
     isWagerValid: (Int) -> Boolean,
+    wagerText: String,
+    setWagerText: (String) -> Unit,
+    isShowError: Boolean,
+    setIsShowError: (Boolean) -> Unit,
     onDismissRequest: () -> Unit
 ) {
-    var wagerText by remember { mutableStateOf("") }
-    var isShowError by remember { mutableStateOf(false) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -393,21 +271,11 @@ fun ClueDialogWagerContents(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextField(
-                value = wagerText,
-                onValueChange = { wagerText = it.filter { it.isDigit() } },
-                label = { Text(text = stringResource(R.string.enter_wager)) },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done,
-                ),
-                isError = isShowError,
-                prefix = { Text(text = currency) },
-                supportingText = {
-                    if (isShowError) {
-                        Text(text = stringResource(R.string.wager_invalid))
-                    }
-                }
+            WagerFieldComposable(
+                wagerText = wagerText,
+                setWagerText = setWagerText,
+                isShowError = isShowError,
+                currency = currency
             )
         }
 
@@ -424,7 +292,7 @@ fun ClueDialogWagerContents(
             }
             TextButton(
                 onClick = {
-                    isShowError = !isWagerValid(wagerText.toInt())
+                    setIsShowError(!isWagerValid(wagerText.toInt()))
                 }
             ) {
                 Text(text = stringResource(R.string.submit))
@@ -524,10 +392,10 @@ fun dummyCallback(arg: Int): Boolean {
 @Preview
 @Composable
 fun ClueDialogOptionsListPreview() {
-    ClueDialogOptionsList(
-        currentSelectedOption = ClueDialogOptionStringIDs.CORRECT,
+    RadioButtonList(
+        currentSelectedOption = RadioButtonOptions.CORRECT,
         onOptionSelected = {},
-        isRemainingDailyDouble = true
+        listOfOptions = RadioButtonOptions.entries
     )
 }
 
@@ -554,14 +422,14 @@ fun ClueDialogMainPreview() {
                 onDismissRequest = {},
                 value = 200,
                 currency = "$",
-                isRemainingDailyDouble = true,
+                listOfOptions = RadioButtonOptions.entries,
                 onDailyDouble = {},
                 // :: is a function reference operator, allowing the passage of this function as an
                 // argument.
                 onCorrect = ::dummyCallback,
                 onIncorrect = ::dummyCallback,
                 onPass = ::dummyCallback,
-                currentSelectedOption = ClueDialogOptionStringIDs.CORRECT,
+                currentSelectedOption = RadioButtonOptions.CORRECT,
                 onOptionSelected = {}
             )
 
@@ -585,7 +453,11 @@ fun ClueDialogWagerValidPreview() {
             ClueDialogWagerContents(
                 currency = "$",
                 isWagerValid = { true },
-                onDismissRequest = {}
+                onDismissRequest = {},
+                setIsShowError = {},
+                wagerText = "",
+                setWagerText = {},
+                isShowError = false
             )
 
         }
@@ -608,7 +480,11 @@ fun ClueDialogWagerInvalidPreview() {
             ClueDialogWagerContents(
                 currency = "$",
                 isWagerValid = { false },
-                onDismissRequest = {}
+                onDismissRequest = {},
+                setIsShowError = {},
+                wagerText = "",
+                setWagerText = {},
+                isShowError = true
             )
         }
 
