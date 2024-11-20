@@ -80,6 +80,15 @@ fun ClueCardTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
+fun ScoreCardTheme(content: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = ClueCardColorScheme,
+        typography = ScoreCardTypography,
+        content = content
+    )
+}
+
+@Composable
 fun ClueButtonTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = ClueButtonColorScheme,

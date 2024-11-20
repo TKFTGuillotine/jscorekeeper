@@ -36,6 +36,7 @@ val Typography = Typography(
 )
 
 val bebasNeueFamily = FontFamily(Font(R.font.bebas_neue))
+val poppinsFamily = FontFamily(Font(R.font.poppins_bold))
 
 val ClueButtonTypography = Typography(
     labelLarge = TextStyle(
@@ -47,6 +48,18 @@ val ClueButtonTypography = Typography(
     headlineSmall = TextStyle(
         fontFamily = bebasNeueFamily,
         fontWeight = FontWeight.Normal,
+        fontSize = 50.sp
+    )
+)
+
+val ScoreCardTypography = Typography(
+    labelLarge = TextStyle(
+        fontFamily = poppinsFamily,
+        fontSize = 50.sp
+    ),
+
+    headlineSmall = TextStyle(
+        fontFamily = poppinsFamily,
         fontSize = 50.sp
     )
 )
