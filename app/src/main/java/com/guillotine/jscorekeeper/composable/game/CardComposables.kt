@@ -32,13 +32,12 @@ fun ClueCardComposable(currency: String, value: Int) {
 }
 
 @Composable
-fun ScoreCardComposable(currency: String, value: Int) {
+fun ScoreCardComposable(currency: String, value: Int, modifier: Modifier = Modifier) {
     ScoreCardTheme {
-        Card(modifier = Modifier.fillMaxWidth()) {
+        Card() {
             Text(
-                modifier = Modifier
-                    .padding(top = 8.dp, bottom = 8.dp)
-                    .fillMaxWidth(),
+                modifier = modifier
+                    .padding(top = 8.dp, bottom = 8.dp),
                 text = if (value >= 0) {
                     // Provides a format string to apply the value to. The comma tells the function
                     // to use regionally appropriate separators with the value that comes next,

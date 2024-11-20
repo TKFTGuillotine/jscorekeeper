@@ -250,7 +250,7 @@ fun ClueDialogWagerContents(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .fillMaxSize()
+            .height(IntrinsicSize.Max)
             // Per M3 spec, the correct amount of padding.
             .padding(24.dp)
     ) {
@@ -318,7 +318,7 @@ fun ClueDialogResponseContents(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .fillMaxSize()
+            .height(IntrinsicSize.Max)
             // Per M3 spec, the correct amount of padding.
             .padding(24.dp)
     ) {

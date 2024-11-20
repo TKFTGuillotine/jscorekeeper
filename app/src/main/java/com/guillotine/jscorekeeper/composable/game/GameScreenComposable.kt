@@ -60,7 +60,18 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
         when (LocalConfiguration.current.orientation) {
             Configuration.ORIENTATION_LANDSCAPE ->
                 if (viewModel.isFinal) {
-
+                    FinalHorizontalComposable(
+                        innerPadding = innerPadding,
+                        score = viewModel.score,
+                        currentSelectedOption = viewModel.currentSelectedClueDialogOption,
+                        onOptionSelected = {viewModel.onClueDialogOptionSelected(it)},
+                        wagerText = viewModel.wagerFieldText,
+                        setWagerText = {viewModel.wagerFieldText = it},
+                        isShowError = viewModel.isShowWagerFieldError,
+                        currency = viewModel.currency,
+                        submitFinalWager = viewModel::submitFinalWager,
+                        navController = navController
+                    )
                 } else {
                     GameBoardHorizontalComposable(
                         innerPadding = innerPadding,

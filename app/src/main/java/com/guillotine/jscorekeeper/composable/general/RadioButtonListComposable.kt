@@ -30,9 +30,10 @@ import com.guillotine.jscorekeeper.data.RadioButtonOptions
 fun RadioButtonList(
     currentSelectedOption: RadioButtonOptions,
     onOptionSelected: (RadioButtonOptions) -> Unit,
-    listOfOptions: List<RadioButtonOptions>
+    listOfOptions: List<RadioButtonOptions>,
+    modifier: Modifier = Modifier
 ) {
-    Column() {
+    Column(modifier) {
         HorizontalDivider()
         // selectableGroup used for accessibility reasons.
         Column(Modifier
