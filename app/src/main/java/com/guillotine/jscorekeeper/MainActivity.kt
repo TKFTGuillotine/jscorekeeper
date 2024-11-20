@@ -57,6 +57,9 @@ class MainActivity : ComponentActivity() {
                         )
                         GameScreenComposable(navController, viewModel)
                     }
+                    composable<ResultsScreen> {
+                        Text("Result: ${it.arguments?.getInt("score")}")
+                    }
                     composable<PastGamesListScreen> {
                         Text("History Screen!")
                     }
