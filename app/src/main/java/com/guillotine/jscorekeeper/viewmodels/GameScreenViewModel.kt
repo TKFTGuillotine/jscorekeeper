@@ -16,7 +16,7 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.guillotine.jscorekeeper.data.ClueDialogOptionStringIDs
+import com.guillotine.jscorekeeper.data.RadioButtonOptions
 import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.data.GameData
 
@@ -37,7 +37,7 @@ private fun Bundle.loadMap(): MutableMap<Int, Int> {
 }
 
 @OptIn(SavedStateHandleSaveableApi::class)
-class GameScreenViewModel (
+class GameScreenViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val gameData: GameData,
     private val isResumeGame: Boolean
@@ -66,6 +66,7 @@ class GameScreenViewModel (
         private set
     var round by savedStateHandle.saveable { mutableIntStateOf(0) }
         private set
+
     // This is saveable so theoretically it shouldn't matter that it's pulling from gameData, and if
     // it does, pulling from savedGameData wouldn't solve that problem because this can be modified
     // and that should not be.
@@ -77,13 +78,20 @@ class GameScreenViewModel (
         private set
     var currentValue by savedStateHandle.saveable { mutableIntStateOf(0) }
         private set
+
     // Doesn't really need to be persisted. If the app has been cleaned from memory, the Snackbar
     // will have been long past gone anyways.
     var snackbarHostState by mutableStateOf(SnackbarHostState())
         private set
-    var currentSelectedClueDialogOption by savedStateHandle.saveable { mutableStateOf(
-        ClueDialogOptionStringIDs.CORRECT) }
+    var currentSelectedClueDialogOption by savedStateHandle.saveable {
+        mutableStateOf(
+            RadioButtonOptions.CORRECT
+        )
+    }
         private set
+    var wagerFieldText by savedStateHandle.saveable { mutableStateOf("") }
+    var isShowWagerFieldError by savedStateHandle.saveable { mutableStateOf(false) }
+    var isFinal by savedStateHandle.saveable { mutableStateOf(false) }
 
     val currency = savedGameData.currency
     private val multipliers = savedGameData.multipliers
@@ -92,6 +100,7 @@ class GameScreenViewModel (
 
     // Initializes a map inline where each key is associated with columns.
     private var columnsPerValue: MutableMap<Int, Int>
+
     init {
         val columnsPerValueBundle = savedStateHandle.get<Bundle>("columns_per_value")
         columnsPerValue =
@@ -108,8 +117,10 @@ class GameScreenViewModel (
     // State for delayed deduction of Daily Double value
     private var isDailyDouble: Boolean
     private var dailyDoubleInitialValue: Int
+
     // Initialized to first value, will increment later.
     private var remainingDailyDoubles: Int
+
     init {
         val dailyDoubleInfoBundle = savedStateHandle.get<Bundle>("daily_double_info")
         if (dailyDoubleInfoBundle != null) {
@@ -143,8 +154,20 @@ class GameScreenViewModel (
         }
     }
 
-    fun isRemainingDailyDouble(): Boolean {
-        return remainingDailyDoubles != 0
+    fun getClueDialogOptions(): List<RadioButtonOptions> {
+        if (remainingDailyDoubles != 0) {
+            return listOf(
+                RadioButtonOptions.CORRECT,
+                RadioButtonOptions.INCORRECT,
+                RadioButtonOptions.DAILY_DOUBLE,
+                RadioButtonOptions.PASS
+            )
+        }
+        return listOf(
+            RadioButtonOptions.CORRECT,
+            RadioButtonOptions.INCORRECT,
+            RadioButtonOptions.PASS
+        )
     }
 
     fun isValueRemaining(value: Int): Boolean {
@@ -159,11 +182,13 @@ class GameScreenViewModel (
         // For tracking internal state.
         isDailyDouble = false
         currentValue = value
-        currentSelectedClueDialogOption = ClueDialogOptionStringIDs.CORRECT
+        currentSelectedClueDialogOption = RadioButtonOptions.CORRECT
         clueDialogState = ClueDialogState.MAIN
+        wagerFieldText = ""
+        isShowWagerFieldError = false
     }
 
-    fun onClueDialogOptionSelected(option: ClueDialogOptionStringIDs) {
+    fun onClueDialogOptionSelected(option: RadioButtonOptions) {
         currentSelectedClueDialogOption = option
     }
 
@@ -181,13 +206,19 @@ class GameScreenViewModel (
 
     fun nextRound() {
         round++
-        // Refresh number of Daily Doubles
-        remainingDailyDoubles = multipliers[round]
-        // map returns a List rather than an IntArray. Must convert.
-        moneyValues = baseMoneyValues.map { it * multipliers[round] }.toIntArray()
-        // Refresh columnsPerValue
-        columnsPerValue = moneyValues.associateWith { columns }.toMutableMap()
-        isShowRoundDialog = false
+        // Transition to Final J!
+        if (multipliers[round] == 0) {
+            isFinal = true
+            isShowRoundDialog = false
+        } else {
+            // Refresh number of Daily Doubles
+            remainingDailyDoubles = multipliers[round]
+            // map returns a List rather than an IntArray. Must convert.
+            moneyValues = baseMoneyValues.map { it * multipliers[round] }.toIntArray()
+            // Refresh columnsPerValue
+            columnsPerValue = moneyValues.associateWith { columns }.toMutableMap()
+            isShowRoundDialog = false
+        }
     }
 
     fun onCorrectResponse(value: Int): Boolean {
@@ -239,11 +270,23 @@ class GameScreenViewModel (
         clueDialogState = ClueDialogState.DAILY_DOUBLE_WAGER
     }
 
+    fun submitFinalWager(wager: Int, isCorrect: Boolean): Int? {
+        if ((wager in 0..score) || wager == 0) {
+            if (isCorrect) {
+                return score + wager
+            } else {
+                return score - wager
+            }
+        }
+        isShowWagerFieldError = true
+        return null
+    }
+
     // Will get called upon to create this ViewModel in the Activity to ensure the SavedStateHandle
     // exists and can do its job, rather than handling ViewModel creation in the Composable.
     companion object {
-        val GAME_DATA_KEY = object: CreationExtras.Key<GameData>{}
-        val IS_RESUME_GAME_KEY = object: CreationExtras.Key<Boolean>{}
+        val GAME_DATA_KEY = object : CreationExtras.Key<GameData> {}
+        val IS_RESUME_GAME_KEY = object : CreationExtras.Key<Boolean> {}
 
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
