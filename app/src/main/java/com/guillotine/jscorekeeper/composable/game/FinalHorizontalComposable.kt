@@ -69,7 +69,7 @@ fun FinalHorizontalComposable(
                     text = stringResource(R.string.final_headline)
                 )
                 Row(Modifier.padding(top = 16.dp)) {
-                    ScoreCardComposable(currency, score, Modifier.fillMaxWidth())
+                    ScoreCardComposable(currency, score, true, Modifier.fillMaxWidth())
                 }
             }
         }

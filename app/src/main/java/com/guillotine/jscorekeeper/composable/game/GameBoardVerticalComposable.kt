@@ -7,15 +7,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.guillotine.jscorekeeper.R
 
@@ -70,18 +73,27 @@ fun GameBoardVerticalComposable(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // I'd rather the negative be displayed before the currency symbol, as on the show.
-            if (score >= 0) {
-                Text("${stringResource(R.string.score)}: ${currency}${score}")
-            } else {
-                Text("${stringResource(R.string.score)}: -${currency}${Math.abs(score)}")
-            }
+            ScoreCardComposable(currency, score, false, Modifier.fillMaxWidth())
             Button(
-                onClick = { onNextRoundClick() }
+                onClick = { onNextRoundClick() },
+                modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(text = stringResource(R.string.next_round))
             }
         }
     }
+}
 
+@Preview
+@Composable
+fun GameBoardVerticalComposablePreview () {
+    GameBoardVerticalComposable(
+        innerPadding = PaddingValues(0.dp),
+        moneyValues = intArrayOf(200, 400, 600, 800, 1000),
+        currency = "$",
+        score = 1600,
+        onNextRoundClick = {},
+        onClueClick = {},
+        isRemainingValue = {true}
+    )
 }

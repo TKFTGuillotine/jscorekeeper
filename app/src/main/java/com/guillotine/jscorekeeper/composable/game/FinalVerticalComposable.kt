@@ -66,7 +66,7 @@ fun FinalVerticalComposable(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ScoreCardComposable(currency, score, Modifier.fillMaxWidth())
+                ScoreCardComposable(currency, score, true, Modifier.fillMaxWidth())
             }
         }
         HorizontalDivider()

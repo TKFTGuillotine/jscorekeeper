@@ -107,7 +107,7 @@ class GameScreenViewModel(
             if (columnsPerValueBundle != null) {
                 columnsPerValueBundle.loadMap()
             } else {
-                moneyValues.associateWith { columns - 1 }.toMutableMap()
+                moneyValues.associateWith { columns }.toMutableMap()
             }
         savedStateHandle.setSavedStateProvider("columns_per_value") {
             columnsPerValue.saveMap()
