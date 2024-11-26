@@ -22,11 +22,15 @@
         <item>200</item>
         <item>250</item>
     </integer-array>
+    <integer-array name="resume_money">
+        <item>1</item>
+    </integer-array>
 
     <!-- Regional currency symbols -->
     <string name="usa_currency">$</string>
     <string name="uk_currency">£</string>
     <string name="australia_currency">$</string>
+    <string name="resume_currency"></string>
 
     <!-- Multiplier by rounds -->
     <integer-array name="usa_round_multiplier">
@@ -46,10 +50,14 @@
         <item>2</item>
         <item>0</item>
     </integer-array>
+    <integer-array name="resume_round_multiplier">
+        <item>1</item>
+    </integer-array>
 
     <!-- Number of columns on the board -->
     <integer name="usa_columns">6</integer>
     <integer name="uk_columns">7</integer>
     <integer name="australia_columns">7</integer>
+    <integer name="resume_columns">0</integer>
 
 </resources>
