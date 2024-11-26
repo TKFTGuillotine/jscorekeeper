@@ -7,10 +7,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.os.bundleOf
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
@@ -19,6 +21,9 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.guillotine.jscorekeeper.data.RadioButtonOptions
 import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.data.GameData
+import com.guillotine.jscorekeeper.data.SavedGame
+import kotlinx.collections.immutable.toPersistentMap
+import kotlinx.coroutines.launch
 
 private fun MutableMap<Int, Int>.saveMap(): Bundle {
     val bundle = Bundle()
@@ -40,9 +45,9 @@ private fun Bundle.loadMap(): MutableMap<Int, Int> {
 class GameScreenViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val gameData: GameData,
-    private val isResumeGame: Boolean
+    private val dataStore: DataStore<SavedGame>
 ) : ViewModel() {
-    private val savedGameData: GameData
+    private var savedGameData: GameData
 
     init {
         val gameDataBundle = savedStateHandle.get<Bundle>("game_data")
@@ -66,11 +71,7 @@ class GameScreenViewModel(
         private set
     var round by savedStateHandle.saveable { mutableIntStateOf(0) }
         private set
-
-    // This is saveable so theoretically it shouldn't matter that it's pulling from gameData, and if
-    // it does, pulling from savedGameData wouldn't solve that problem because this can be modified
-    // and that should not be.
-    var moneyValues by savedStateHandle.saveable { mutableStateOf(gameData.moneyValues) }
+    var moneyValues by savedStateHandle.saveable { mutableStateOf(savedGameData.moneyValues) }
         private set
     var clueDialogState by savedStateHandle.saveable { mutableStateOf(ClueDialogState.NONE) }
         private set
@@ -84,19 +85,17 @@ class GameScreenViewModel(
     var snackbarHostState by mutableStateOf(SnackbarHostState())
         private set
     var currentSelectedClueDialogOption by savedStateHandle.saveable {
-        mutableStateOf(
-            RadioButtonOptions.CORRECT
-        )
+        mutableStateOf(RadioButtonOptions.CORRECT)
     }
         private set
     var wagerFieldText by savedStateHandle.saveable { mutableStateOf("") }
     var isShowWagerFieldError by savedStateHandle.saveable { mutableStateOf(false) }
     var isFinal by savedStateHandle.saveable { mutableStateOf(false) }
 
-    val currency = savedGameData.currency
-    private val multipliers = savedGameData.multipliers
-    private val baseMoneyValues = savedGameData.moneyValues
-    private val columns = savedGameData.columns
+    var currency = savedGameData.currency
+    private var multipliers = savedGameData.multipliers
+    private var baseMoneyValues = savedGameData.moneyValues
+    private var columns = savedGameData.columns
 
     // Initializes a map inline where each key is associated with columns.
     private var columnsPerValue: MutableMap<Int, Int>
@@ -121,6 +120,10 @@ class GameScreenViewModel(
     // Initialized to first value, will increment later.
     private var remainingDailyDoubles: Int
 
+    // Used for transition out of game, otherwise the death of the ViewModel assumes we need to save
+    // and resume the game later.
+    private var isGameComplete: Boolean = false
+
     init {
         val dailyDoubleInfoBundle = savedStateHandle.get<Bundle>("daily_double_info")
         if (dailyDoubleInfoBundle != null) {
@@ -141,6 +144,28 @@ class GameScreenViewModel(
         }
     }
 
+    // Resume game code.
+    init {
+        // If we're resuming a game, we'll know, because no game can be played with no columns.
+        if (gameData.columns == 0) {
+            viewModelScope.launch {
+                dataStore.data.collect {
+                    savedGameData = it.gameData
+                    score = it.score
+                    round = it.round
+                    moneyValues = it.savedMoneyValues
+                    baseMoneyValues = it.gameData.moneyValues
+                    columnsPerValue = it.columnsPerValue
+                    remainingDailyDoubles = it.remainingDailyDoubles
+                    isFinal = it.isFinal
+
+                    multipliers = savedGameData.multipliers
+                    currency = savedGameData.currency
+                    columns = savedGameData.columns
+                }
+            }
+        }
+    }
 
     fun isWagerValid(wager: Int): Boolean {
         if (wager > score && wager > moneyValues.max()) {
@@ -219,6 +244,7 @@ class GameScreenViewModel(
             columnsPerValue = moneyValues.associateWith { columns }.toMutableMap()
             isShowRoundDialog = false
         }
+        saveGame()
     }
 
     fun onCorrectResponse(value: Int): Boolean {
@@ -237,6 +263,7 @@ class GameScreenViewModel(
             }
         }
         onClueDialogDismiss()
+        saveGame()
         return (isDailyDouble && remainingDailyDoubles != 0)
     }
 
@@ -254,6 +281,7 @@ class GameScreenViewModel(
             }
         }
         onClueDialogDismiss()
+        saveGame()
         return (isDailyDouble && remainingDailyDoubles != 0)
     }
 
@@ -262,6 +290,7 @@ class GameScreenViewModel(
             columnsPerValue[value] = columnsPerValue[value]!! - 1
         }
         onClueDialogDismiss()
+        saveGame()
     }
 
     fun onDailyDouble() {
@@ -273,8 +302,10 @@ class GameScreenViewModel(
     fun submitFinalWager(wager: Int, isCorrect: Boolean): Int? {
         if ((wager in 0..score) || wager == 0) {
             if (isCorrect) {
+                isGameComplete = true
                 return score + wager
             } else {
+                isGameComplete = true
                 return score - wager
             }
         }
@@ -282,21 +313,41 @@ class GameScreenViewModel(
         return null
     }
 
+    // Will be called from the Activity on app closure. Could potentially be killed before finish,
+    // but it seems quick enough that I can probably get away with it. Trying to do DataStore using
+    // WorkManager seems like a huge pain and I want to use both this and Room just to say that I
+    // have.
+    private fun saveGame() {
+        viewModelScope.launch {
+            dataStore.updateData {
+                it.copy(
+                    gameData = savedGameData,
+                    savedMoneyValues = moneyValues,
+                    score = score,
+                    round = round,
+                    columnsPerValue = columnsPerValue,
+                    remainingDailyDoubles = remainingDailyDoubles,
+                    isFinal = isFinal
+                )
+            }
+        }
+    }
+
     // Will get called upon to create this ViewModel in the Activity to ensure the SavedStateHandle
     // exists and can do its job, rather than handling ViewModel creation in the Composable.
     companion object {
         val GAME_DATA_KEY = object : CreationExtras.Key<GameData> {}
-        val IS_RESUME_GAME_KEY = object : CreationExtras.Key<Boolean> {}
+        val DATA_STORE_KEY = object : CreationExtras.Key<DataStore<SavedGame>> {}
 
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val savedStateHandle = createSavedStateHandle()
                 val gameData = (this[GAME_DATA_KEY] as GameData)
-                val isResumeGame = (this[IS_RESUME_GAME_KEY] as Boolean)
+                val dataStore = (this[DATA_STORE_KEY] as DataStore<SavedGame>)
                 GameScreenViewModel(
                     savedStateHandle,
                     gameData,
-                    isResumeGame
+                    dataStore
                 )
             }
         }

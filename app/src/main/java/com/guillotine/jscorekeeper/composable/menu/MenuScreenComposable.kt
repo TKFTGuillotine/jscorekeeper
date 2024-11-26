@@ -27,10 +27,13 @@ import com.guillotine.jscorekeeper.data.GameModes
 import com.guillotine.jscorekeeper.GameScreen
 import com.guillotine.jscorekeeper.PastGamesListScreen
 import com.guillotine.jscorekeeper.R
+import com.guillotine.jscorekeeper.data.SavedGame
+import com.guillotine.jscorekeeper.viewmodels.MenuScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuScreenComposable(navController: NavHostController) {
+fun MenuScreenComposable(navController: NavHostController, savedGame: SavedGame? = null) {
+    val viewModel = MenuScreenViewModel()
     Scaffold(topBar = {
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
@@ -57,6 +60,20 @@ fun MenuScreenComposable(navController: NavHostController) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                if (viewModel.isSavedGame(savedGame)) {
+                    Button (
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            navController.navigate(
+                                GameScreen(
+                                    gameMode = GameModes.RESUME
+                                )
+                            )
+                        }
+                    ) {
+                        Text(stringResource(R.string.resume_game))
+                    }
+                }
                 Button(
                     // For each button, take up the max size of the column, such that the buttons
                     // match the size of the largest button.
@@ -65,8 +82,7 @@ fun MenuScreenComposable(navController: NavHostController) {
 
                         navController.navigate(
                             GameScreen(
-                                gameMode = GameModes.USA,
-                                isResumeGame = false
+                                gameMode = GameModes.USA
                             )
                         )
 
@@ -79,8 +95,7 @@ fun MenuScreenComposable(navController: NavHostController) {
                     onClick = {
                         navController.navigate(
                             GameScreen(
-                                gameMode = GameModes.UK,
-                                isResumeGame = false
+                                gameMode = GameModes.UK
                             )
                         )
 
@@ -93,8 +108,7 @@ fun MenuScreenComposable(navController: NavHostController) {
                     onClick = {
                         navController.navigate(
                             GameScreen(
-                                gameMode = GameModes.AUSTRALIA,
-                                isResumeGame = false
+                                gameMode = GameModes.AUSTRALIA
                             )
                         )
 
