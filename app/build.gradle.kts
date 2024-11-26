@@ -68,8 +68,16 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     // Dependency for type-safe Navigation Compose.
     implementation(libs.kotlinx.serialization.core)
+    // Dependency for proto DataStore.
+    implementation(libs.kotlinx.serialization.json)
+    // Used just for Proto DataStore.
+    implementation(libs.kotlinx.collections.immutable)
     // For the Google Font provider used for the clue box font (I'm not licensing Swiss).
     implementation(libs.androidx.ui.text.google.fonts)
+    // For the DataStore, the API that replaces SharedPreferences, to save games to resume later.
+    implementation(libs.androidx.datastore)
+    // For saving during onDestroy and guaranteeing it will complete.
+    implementation(libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
