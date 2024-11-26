@@ -8,8 +8,7 @@ object MenuScreen
 
 @Serializable
 data class GameScreen(
-    val gameMode: GameModes,
-    val isResumeGame: Boolean,
+    val gameMode: GameModes
 )
 
 @Serializable
