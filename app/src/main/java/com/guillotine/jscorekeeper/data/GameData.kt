@@ -2,7 +2,9 @@ package com.guillotine.jscorekeeper.data
 
 import android.os.Bundle
 import androidx.core.os.bundleOf
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class GameData(
     val moneyValues: IntArray,
     val multipliers: IntArray,
