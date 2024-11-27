@@ -1,4 +1,4 @@
-package com.guillotine.jscorekeeper.composable.game
+package com.guillotine.jscorekeeper.composable.general
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text

@@ -1,8 +1,6 @@
-package com.guillotine.jscorekeeper.composable.game
+package com.guillotine.jscorekeeper.composable.general
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -18,7 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.guillotine.jscorekeeper.ui.theme.ClueCardTheme
 import com.guillotine.jscorekeeper.ui.theme.ScoreCardTheme
-import androidx.compose.ui.text.TextStyle
 
 @Composable
 fun ClueCardComposable(currency: String, value: Int) {

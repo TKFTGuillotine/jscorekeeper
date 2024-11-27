@@ -23,8 +23,8 @@ import androidx.navigation.NavHostController
 import com.guillotine.jscorekeeper.MenuScreen
 import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.ResultsScreen
-import com.guillotine.jscorekeeper.composable.game.ScoreCardComposable
-import com.guillotine.jscorekeeper.composable.game.WagerFieldComposable
+import com.guillotine.jscorekeeper.composable.general.ScoreCardComposable
+import com.guillotine.jscorekeeper.composable.general.WagerFieldComposable
 import com.guillotine.jscorekeeper.data.RadioButtonOptions
 import com.guillotine.jscorekeeper.composable.general.RadioButtonList
 
