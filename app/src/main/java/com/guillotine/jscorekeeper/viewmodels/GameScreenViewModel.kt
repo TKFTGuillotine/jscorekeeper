@@ -22,7 +22,6 @@ import com.guillotine.jscorekeeper.data.RadioButtonOptions
 import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.data.GameData
 import com.guillotine.jscorekeeper.data.SavedGame
-import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.launch
 
 private fun MutableMap<Int, Int>.saveMap(): Bundle {
@@ -90,7 +89,6 @@ class GameScreenViewModel(
         private set
     var wagerFieldText by savedStateHandle.saveable { mutableStateOf("") }
     var isShowWagerFieldError by savedStateHandle.saveable { mutableStateOf(false) }
-    var isFinal by savedStateHandle.saveable { mutableStateOf(false) }
 
     var currency = savedGameData.currency
     private var multipliers = savedGameData.multipliers
@@ -144,6 +142,7 @@ class GameScreenViewModel(
         }
     }
 
+    var isFinal by savedStateHandle.saveable { mutableStateOf(false) }
     // Resume game code.
     init {
         // If we're resuming a game, we'll know, because no game can be played with no columns.
@@ -230,12 +229,14 @@ class GameScreenViewModel(
     }
 
     fun nextRound() {
-        round++
         // Transition to Final J!
-        if (multipliers[round] == 0) {
+        if (multipliers[round + 1] == 0) {
             isFinal = true
             isShowRoundDialog = false
         } else {
+            // Since this is going to trigger a screen transition, it will look weird if the header
+            // bar changes while the screen is transitioning instead of landing on the new title.
+            round++
             // Refresh number of Daily Doubles
             remainingDailyDoubles = multipliers[round]
             // map returns a List rather than an IntArray. Must convert.
@@ -297,20 +298,6 @@ class GameScreenViewModel(
         isDailyDouble = true
         dailyDoubleInitialValue = currentValue
         clueDialogState = ClueDialogState.DAILY_DOUBLE_WAGER
-    }
-
-    fun submitFinalWager(wager: Int, isCorrect: Boolean): Int? {
-        if ((wager in 0..score) || wager == 0) {
-            if (isCorrect) {
-                isGameComplete = true
-                return score + wager
-            } else {
-                isGameComplete = true
-                return score - wager
-            }
-        }
-        isShowWagerFieldError = true
-        return null
     }
 
     // Will be called from the Activity on app closure. Could potentially be killed before finish,

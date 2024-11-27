@@ -16,17 +16,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.guillotine.jscorekeeper.composable.finalj.FinalScreenComposable
 import com.guillotine.jscorekeeper.composable.game.GameScreenComposable
 import com.guillotine.jscorekeeper.composable.menu.MenuScreenComposable
 import com.guillotine.jscorekeeper.data.GameData
 import com.guillotine.jscorekeeper.data.GameModes
 import com.guillotine.jscorekeeper.data.SavedGameSerializer
 import com.guillotine.jscorekeeper.ui.theme.JScorekeeperTheme
+import com.guillotine.jscorekeeper.viewmodels.FinalScreenViewModel
 import com.guillotine.jscorekeeper.viewmodels.GameScreenViewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var gameScreenViewModel: GameScreenViewModel
+    private lateinit var finalScreenViewModel: FinalScreenViewModel
+
     private val Context.dataStore by dataStore("saved_game.json", SavedGameSerializer)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -60,6 +65,18 @@ class MainActivity : ComponentActivity() {
                             extras = extras,
                         )
                         GameScreenComposable(navController, gameScreenViewModel)
+                    }
+                    composable<FinalScreen> { navBackStackEntry ->
+                        val route: FinalScreen = navBackStackEntry.toRoute<FinalScreen>()
+                        val extras = MutableCreationExtras().apply {
+                            set(SAVED_STATE_REGISTRY_OWNER_KEY, navBackStackEntry)
+                            set(VIEW_MODEL_STORE_OWNER_KEY, navBackStackEntry)
+                        }
+                        finalScreenViewModel = viewModel(
+                            factory = FinalScreenViewModel.Factory,
+                            extras = extras,
+                        )
+                        FinalScreenComposable(navController, finalScreenViewModel, route)
                     }
                     composable<ResultsScreen> {
                         Text("Result: ${it.arguments?.getInt("score")}")

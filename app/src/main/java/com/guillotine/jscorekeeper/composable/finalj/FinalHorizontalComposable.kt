@@ -1,6 +1,5 @@
-package com.guillotine.jscorekeeper.composable.game
+package com.guillotine.jscorekeeper.composable.finalj
 
-import android.provider.MediaStore.Audio.Radio
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,13 +22,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.navOptions
 import com.guillotine.jscorekeeper.MenuScreen
 import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.ResultsScreen
+import com.guillotine.jscorekeeper.composable.game.ScoreCardComposable
+import com.guillotine.jscorekeeper.composable.game.WagerFieldComposable
 import com.guillotine.jscorekeeper.data.RadioButtonOptions
 import com.guillotine.jscorekeeper.composable.general.RadioButtonList
-import com.guillotine.jscorekeeper.ui.theme.ClueCardTheme
 
 @Composable
 fun FinalHorizontalComposable(
@@ -42,7 +40,7 @@ fun FinalHorizontalComposable(
     setWagerText: (String) -> Unit,
     isShowError: Boolean,
     currency: String,
-    submitFinalWager: (Int, Boolean) -> Int?,
+    submitFinalWager: (Int, Int, Boolean) -> Int?,
     navController: NavHostController
 ) {
     // The whole scaffold thing doesn't seem to account for the display cutout, so I'll handle it
@@ -116,6 +114,7 @@ fun FinalHorizontalComposable(
                     onClick = {
                         val updatedScore = submitFinalWager(
                             wagerText.toInt(),
+                            score,
                             currentSelectedOption == RadioButtonOptions.CORRECT
                         )
                         if (updatedScore != null) {

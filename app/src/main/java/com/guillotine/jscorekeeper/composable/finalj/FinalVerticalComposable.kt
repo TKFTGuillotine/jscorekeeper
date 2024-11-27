@@ -1,6 +1,5 @@
-package com.guillotine.jscorekeeper.composable.game
+package com.guillotine.jscorekeeper.composable.finalj
 
-import android.provider.MediaStore.Audio.Radio
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,13 +20,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.navOptions
 import com.guillotine.jscorekeeper.MenuScreen
 import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.ResultsScreen
+import com.guillotine.jscorekeeper.composable.game.ScoreCardComposable
+import com.guillotine.jscorekeeper.composable.game.WagerFieldComposable
 import com.guillotine.jscorekeeper.data.RadioButtonOptions
 import com.guillotine.jscorekeeper.composable.general.RadioButtonList
-import com.guillotine.jscorekeeper.ui.theme.ClueCardTheme
 
 @Composable
 fun FinalVerticalComposable(
@@ -39,7 +38,7 @@ fun FinalVerticalComposable(
     setWagerText: (String) -> Unit,
     isShowError: Boolean,
     currency: String,
-    submitFinalWager: (Int, Boolean) -> Int?,
+    submitFinalWager: (Int, Int, Boolean) -> Int?,
     navController: NavHostController
 ) {
     Column(
@@ -123,6 +122,7 @@ fun FinalVerticalComposable(
                 onClick = {
                     val updatedScore = submitFinalWager(
                         wagerText.toInt(),
+                        score,
                         currentSelectedOption == RadioButtonOptions.CORRECT
                     )
                     if (updatedScore != null) {
@@ -161,6 +161,6 @@ fun FinalVerticalComposablePreview() {
     )
 }
 
-fun dummyWagerSubmitFunction(int: Int, boolean: Boolean): Int? {
+fun dummyWagerSubmitFunction(int: Int, int2: Int, boolean: Boolean): Int? {
     return 1
 }

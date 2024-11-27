@@ -12,6 +12,13 @@ data class GameScreen(
 )
 
 @Serializable
+data class FinalScreen(
+    val score: Int,
+    val round: Int,
+    val currency: String,
+)
+
+@Serializable
 data class ResultsScreen (
     val score: Int,
 )

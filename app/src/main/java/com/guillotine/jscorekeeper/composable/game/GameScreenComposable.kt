@@ -18,6 +18,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import com.guillotine.jscorekeeper.FinalScreen
+import com.guillotine.jscorekeeper.MenuScreen
 import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.viewmodels.GameScreenViewModel
@@ -57,60 +59,44 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
         modifier = Modifier.fillMaxSize(),
     ) { innerPadding ->
 
+        if (viewModel.isFinal) {
+            navController.navigate(
+                route = FinalScreen(
+                    currency = viewModel.currency,
+                    score = viewModel.score,
+                    round = viewModel.round,
+                )
+            ) {
+                popUpTo(MenuScreen) {
+                    inclusive = false
+                }
+            }
+        }
+
         when (LocalConfiguration.current.orientation) {
-            Configuration.ORIENTATION_LANDSCAPE ->
-                if (viewModel.isFinal) {
-                    FinalHorizontalComposable(
-                        innerPadding = innerPadding,
-                        score = viewModel.score,
-                        currentSelectedOption = viewModel.currentSelectedClueDialogOption,
-                        onOptionSelected = {viewModel.onClueDialogOptionSelected(it)},
-                        wagerText = viewModel.wagerFieldText,
-                        setWagerText = {viewModel.wagerFieldText = it},
-                        isShowError = viewModel.isShowWagerFieldError,
-                        currency = viewModel.currency,
-                        submitFinalWager = viewModel::submitFinalWager,
-                        navController = navController
-                    )
-                } else {
-                    GameBoardHorizontalComposable(
-                        innerPadding = innerPadding,
-                        moneyValues = viewModel.moneyValues,
-                        currency = viewModel.currency,
-                        score = viewModel.score,
-                        onClueClick = { viewModel.showClueDialog(it) },
-                        onNextRoundClick = { viewModel.showRoundDialog() },
-                        isRemainingValue = viewModel::isValueRemaining,
-                    )
-                }
+            Configuration.ORIENTATION_LANDSCAPE -> {
+                GameBoardHorizontalComposable(
+                    innerPadding = innerPadding,
+                    moneyValues = viewModel.moneyValues,
+                    currency = viewModel.currency,
+                    score = viewModel.score,
+                    onClueClick = { viewModel.showClueDialog(it) },
+                    onNextRoundClick = { viewModel.showRoundDialog() },
+                    isRemainingValue = viewModel::isValueRemaining,
+                )
+            }
 
-            else ->
-                if (viewModel.isFinal) {
-                    FinalVerticalComposable(
-                        innerPadding = innerPadding,
-                        score = viewModel.score,
-                        currentSelectedOption = viewModel.currentSelectedClueDialogOption,
-                        onOptionSelected = {viewModel.onClueDialogOptionSelected(it)},
-                        wagerText = viewModel.wagerFieldText,
-                        setWagerText = {viewModel.wagerFieldText = it},
-                        isShowError = viewModel.isShowWagerFieldError,
-                        currency = viewModel.currency,
-                        submitFinalWager = viewModel::submitFinalWager,
-                        navController = navController
-                    )
-                } else {
-                    GameBoardVerticalComposable(
-                        innerPadding = innerPadding,
-                        moneyValues = viewModel.moneyValues,
-                        currency = viewModel.currency,
-                        score = viewModel.score,
-                        onClueClick = { viewModel.showClueDialog(it) },
-                        onNextRoundClick = { viewModel.showRoundDialog() },
-                        isRemainingValue = viewModel::isValueRemaining,
-                    )
-                }
-
-
+            else -> {
+                GameBoardVerticalComposable(
+                    innerPadding = innerPadding,
+                    moneyValues = viewModel.moneyValues,
+                    currency = viewModel.currency,
+                    score = viewModel.score,
+                    onClueClick = { viewModel.showClueDialog(it) },
+                    onNextRoundClick = { viewModel.showRoundDialog() },
+                    isRemainingValue = viewModel::isValueRemaining,
+                )
+            }
         }
 
         if (viewModel.isShowRoundDialog) {
@@ -156,9 +142,9 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
                 },
                 currentSelectedOption = viewModel.currentSelectedClueDialogOption,
                 wagerText = viewModel.wagerFieldText,
-                setWagerText = {viewModel.wagerFieldText = it},
+                setWagerText = { viewModel.wagerFieldText = it },
                 isShowError = viewModel.isShowWagerFieldError,
-                setIsShowError = {viewModel.isShowWagerFieldError = it}
+                setIsShowError = { viewModel.isShowWagerFieldError = it }
             )
         }
     }

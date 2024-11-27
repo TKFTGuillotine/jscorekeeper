@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.guillotine.jscorekeeper.FinalScreen
 import com.guillotine.jscorekeeper.data.GameModes
 import com.guillotine.jscorekeeper.GameScreen
 import com.guillotine.jscorekeeper.PastGamesListScreen
@@ -64,11 +65,21 @@ fun MenuScreenComposable(navController: NavHostController, savedGame: SavedGame?
                     Button (
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            navController.navigate(
-                                GameScreen(
-                                    gameMode = GameModes.RESUME
+                            if (savedGame != null && savedGame.isFinal) {
+                                navController.navigate(
+                                    FinalScreen(
+                                        score = savedGame.score,
+                                        round = savedGame.round,
+                                        currency = savedGame.gameData.currency
+                                    )
                                 )
-                            )
+                            } else {
+                                navController.navigate(
+                                    GameScreen(
+                                        gameMode = GameModes.RESUME
+                                    )
+                                )
+                            }
                         }
                     ) {
                         Text(stringResource(R.string.resume_game))
