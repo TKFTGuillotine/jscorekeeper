@@ -24,8 +24,9 @@
     <string name="were_you_correct">Were you correct?</string>
     <string name="wager">Wager</string>
     <string name="no_remaining_daily_doubles">No remaining Daily Doubles.</string>
-    <string name="final_headline">Entering Final J!, your score is:</string>
+    <string name="entering_final_your_score_is">Entering Final J!, your score is:</string>
     <string name="final_wager_instructions">Enter a value between 0 and your current score to wager on Final J!</string>
+    <string name="results">Results</string>
 
     <string-array name="round_names_indexed_by_multiplier">
         <item>Final J!</item>
