@@ -21,6 +21,7 @@ data class FinalScreen(
 @Serializable
 data class ResultsScreen (
     val score: Int,
+    val deleteCurrentSavedGame: Boolean
 )
 
 @Serializable
