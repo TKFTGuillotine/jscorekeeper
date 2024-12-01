@@ -57,7 +57,7 @@ fun FinalVerticalComposable(
             ) {
                 Text(
                     style = MaterialTheme.typography.titleLarge,
-                    text = stringResource(R.string.final_headline)
+                    text = stringResource(R.string.entering_final_your_score_is)
                 )
             }
             Row(
@@ -128,7 +128,8 @@ fun FinalVerticalComposable(
                     if (updatedScore != null) {
                         navController.navigate(
                             route = ResultsScreen(
-                                score = updatedScore
+                                score = updatedScore,
+                                deleteCurrentSavedGame = true
                             )
                         ) {
                             popUpTo(MenuScreen) {

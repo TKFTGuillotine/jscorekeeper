@@ -64,7 +64,7 @@ fun FinalHorizontalComposable(
             ) {
                 Text(
                     style = MaterialTheme.typography.titleLarge,
-                    text = stringResource(R.string.final_headline)
+                    text = stringResource(R.string.entering_final_your_score_is)
                 )
                 Row(Modifier.padding(top = 16.dp)) {
                     ScoreCardComposable(currency, score, true, Modifier.fillMaxWidth())
@@ -120,7 +120,8 @@ fun FinalHorizontalComposable(
                         if (updatedScore != null) {
                             navController.navigate(
                                 route = ResultsScreen(
-                                    score = updatedScore
+                                    score = updatedScore,
+                                    deleteCurrentSavedGame = true
                                 )
                             ) {
                                 popUpTo(MenuScreen) {
