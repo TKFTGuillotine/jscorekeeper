@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.datastore.dataStore
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
 import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -19,12 +20,15 @@ import androidx.navigation.toRoute
 import com.guillotine.jscorekeeper.composable.finalj.FinalScreenComposable
 import com.guillotine.jscorekeeper.composable.game.GameScreenComposable
 import com.guillotine.jscorekeeper.composable.menu.MenuScreenComposable
+import com.guillotine.jscorekeeper.composable.results.ResultsScreenComposable
 import com.guillotine.jscorekeeper.data.GameData
 import com.guillotine.jscorekeeper.data.GameModes
+import com.guillotine.jscorekeeper.data.SavedGame
 import com.guillotine.jscorekeeper.data.SavedGameSerializer
 import com.guillotine.jscorekeeper.ui.theme.JScorekeeperTheme
 import com.guillotine.jscorekeeper.viewmodels.FinalScreenViewModel
 import com.guillotine.jscorekeeper.viewmodels.GameScreenViewModel
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private lateinit var gameScreenViewModel: GameScreenViewModel
@@ -78,8 +82,15 @@ class MainActivity : ComponentActivity() {
                         )
                         FinalScreenComposable(navController, finalScreenViewModel, route)
                     }
-                    composable<ResultsScreen> {
-                        Text("Result: ${it.arguments?.getInt("score")}")
+                    composable<ResultsScreen> { navBackStackEntry ->
+                        val route = navBackStackEntry.toRoute<ResultsScreen>()
+                        if (route.deleteCurrentSavedGame) {
+                            lifecycleScope.launch {
+                                deleteSavedGame()
+                            }
+                        }
+
+                        ResultsScreenComposable(navController, route)
                     }
                     composable<PastGamesListScreen> {
                         Text("History Screen!")
@@ -116,5 +127,35 @@ class MainActivity : ComponentActivity() {
         }
 
         return GameData(moneyValues, rounds, currency, columns)
+    }
+
+    private suspend fun deleteSavedGame() {
+        val defaultValues = SavedGame(
+            gameData = GameData(
+                moneyValues = intArrayOf(0),
+                multipliers = intArrayOf(0),
+                currency = "",
+                // This will never be the case in a real game, so this being a default value
+                // indicates there is no saved game to the menu screen.
+                columns = 0,
+            ),
+            savedMoneyValues = intArrayOf(0),
+            score = 0,
+            round = 0,
+            columnsPerValue = mutableMapOf<Int, Int>().toMutableMap(),
+            remainingDailyDoubles = 0,
+            isFinal = false,
+        )
+        dataStore.updateData {
+            it.copy(
+                gameData = defaultValues.gameData,
+                savedMoneyValues = defaultValues.savedMoneyValues,
+                score = defaultValues.score,
+                round = defaultValues.round,
+                columnsPerValue = defaultValues.columnsPerValue,
+                remainingDailyDoubles = defaultValues.remainingDailyDoubles,
+                isFinal = defaultValues.isFinal,
+            )
+        }
     }
 }
