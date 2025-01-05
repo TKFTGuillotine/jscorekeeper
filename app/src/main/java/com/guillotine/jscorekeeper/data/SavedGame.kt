@@ -3,8 +3,6 @@ package com.guillotine.jscorekeeper.data
 import androidx.datastore.core.Serializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.collections.immutable.PersistentMap
-import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.serialization.SerializationException
 import java.io.InputStream
 import java.io.OutputStream
@@ -18,6 +16,7 @@ data class SavedGame(
     val columnsPerValue: MutableMap<Int, Int>,
     val remainingDailyDoubles: Int,
     val isFinal: Boolean,
+    val clueIndex: Int
 )
 
 object SavedGameSerializer : Serializer<SavedGame> {
@@ -37,6 +36,7 @@ object SavedGameSerializer : Serializer<SavedGame> {
             columnsPerValue = mutableMapOf<Int, Int>().toMutableMap(),
             remainingDailyDoubles = 0,
             isFinal = false,
+            clueIndex = 0
             )
 
     override suspend fun readFrom(input: InputStream): SavedGame {

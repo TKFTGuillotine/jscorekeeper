@@ -65,6 +65,7 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
                     currency = viewModel.currency,
                     score = viewModel.score,
                     round = viewModel.round,
+                    timestamp = viewModel.gameTimestamp
                 )
             ) {
                 popUpTo(MenuScreen) {

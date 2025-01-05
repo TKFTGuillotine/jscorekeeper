@@ -18,6 +18,10 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.guillotine.jscorekeeper.composable.database.ClueEntity
+import com.guillotine.jscorekeeper.composable.database.ClueType
+import com.guillotine.jscorekeeper.composable.database.DailyDoubleEntity
+import com.guillotine.jscorekeeper.composable.database.StatisticsDatabase
 import com.guillotine.jscorekeeper.data.RadioButtonOptions
 import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.data.GameData
@@ -44,7 +48,9 @@ private fun Bundle.loadMap(): MutableMap<Int, Int> {
 class GameScreenViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val gameData: GameData,
-    private val dataStore: DataStore<SavedGame>
+    private val dataStore: DataStore<SavedGame>,
+    private val statisticsDatabase: StatisticsDatabase,
+    val gameTimestamp: Long
 ) : ViewModel() {
     private var savedGameData: GameData
 
@@ -111,6 +117,9 @@ class GameScreenViewModel(
         }
     }
 
+    // Initializes a counter for persisting the current clue to Room
+    private var clueIndex by savedStateHandle.saveable { mutableStateOf(0) }
+
     // State for delayed deduction of Daily Double value
     private var isDailyDouble: Boolean
     private var dailyDoubleInitialValue: Int
@@ -143,6 +152,7 @@ class GameScreenViewModel(
     }
 
     var isFinal by savedStateHandle.saveable { mutableStateOf(false) }
+
     // Resume game code.
     init {
         // If we're resuming a game, we'll know, because no game can be played with no columns.
@@ -157,6 +167,7 @@ class GameScreenViewModel(
                     columnsPerValue = it.columnsPerValue
                     remainingDailyDoubles = it.remainingDailyDoubles
                     isFinal = it.isFinal
+                    clueIndex = it.clueIndex
 
                     multipliers = savedGameData.multipliers
                     currency = savedGameData.currency
@@ -258,9 +269,43 @@ class GameScreenViewModel(
                 columnsPerValue[dailyDoubleInitialValue] =
                     columnsPerValue[dailyDoubleInitialValue]!! - 1
             }
+            // Persist to stats database
+            viewModelScope.launch {
+                statisticsDatabase.statisticsDao().insertClue(
+                    ClueEntity(
+                        timestamp = gameTimestamp,
+                        value = dailyDoubleInitialValue,
+                        type = ClueType.DAILY_DOUBLE,
+                        round = round,
+                        index = clueIndex
+                    )
+                )
+                statisticsDatabase.statisticsDao().insertDailyDouble(
+                    DailyDoubleEntity(
+                        timestamp = gameTimestamp,
+                        index = clueIndex++,
+                        wager = value,
+                        round = round,
+                        wasCorrect = true
+                    )
+                )
+            }
+
         } else {
             if (columnsPerValue[value] != null) {
                 columnsPerValue[value] = columnsPerValue[value]!! - 1
+            }
+            // Persist to stats database
+            viewModelScope.launch {
+                statisticsDatabase.statisticsDao().insertClue(
+                    ClueEntity(
+                        timestamp = gameTimestamp,
+                        value = value,
+                        type = ClueType.CORRECT,
+                        round = round,
+                        index = clueIndex++
+                    )
+                )
             }
         }
         onClueDialogDismiss()
@@ -276,9 +321,42 @@ class GameScreenViewModel(
                 columnsPerValue[dailyDoubleInitialValue] =
                     columnsPerValue[dailyDoubleInitialValue]!! - 1
             }
+            viewModelScope.launch {
+                // Persist to stats database
+                statisticsDatabase.statisticsDao().insertClue(
+                    ClueEntity(
+                        timestamp = gameTimestamp,
+                        value = dailyDoubleInitialValue,
+                        type = ClueType.DAILY_DOUBLE,
+                        round = round,
+                        index = clueIndex
+                    )
+                )
+                statisticsDatabase.statisticsDao().insertDailyDouble(
+                    DailyDoubleEntity(
+                        timestamp = gameTimestamp,
+                        index = clueIndex++,
+                        wager = value,
+                        round = round,
+                        wasCorrect = false
+                    )
+                )
+            }
         } else {
             if (columnsPerValue[value] != null) {
                 columnsPerValue[value] = columnsPerValue[value]!! - 1
+            }
+            viewModelScope.launch {
+                // Persist to stats database
+                statisticsDatabase.statisticsDao().insertClue(
+                    ClueEntity(
+                        timestamp = gameTimestamp,
+                        value = value,
+                        type = ClueType.INCORRECT,
+                        round = round,
+                        index = clueIndex++
+                    )
+                )
             }
         }
         onClueDialogDismiss()
@@ -289,6 +367,18 @@ class GameScreenViewModel(
     fun onPass(value: Int) {
         if (columnsPerValue[value] != null) {
             columnsPerValue[value] = columnsPerValue[value]!! - 1
+        }
+        viewModelScope.launch {
+            // Persist to stats database
+            statisticsDatabase.statisticsDao().insertClue(
+                ClueEntity(
+                    timestamp = gameTimestamp,
+                    value = value,
+                    type = ClueType.PASS,
+                    round = round,
+                    index = clueIndex++
+                )
+            )
         }
         onClueDialogDismiss()
         saveGame()
@@ -314,7 +404,8 @@ class GameScreenViewModel(
                     round = round,
                     columnsPerValue = columnsPerValue,
                     remainingDailyDoubles = remainingDailyDoubles,
-                    isFinal = isFinal
+                    isFinal = isFinal,
+                    clueIndex = clueIndex
                 )
             }
         }
@@ -325,16 +416,22 @@ class GameScreenViewModel(
     companion object {
         val GAME_DATA_KEY = object : CreationExtras.Key<GameData> {}
         val DATA_STORE_KEY = object : CreationExtras.Key<DataStore<SavedGame>> {}
+        val STATISTICS_DATABASE_KEY = object : CreationExtras.Key<StatisticsDatabase> {}
+        val GAME_TIMESTAMP_KEY = object : CreationExtras.Key<Long> {}
 
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val savedStateHandle = createSavedStateHandle()
                 val gameData = (this[GAME_DATA_KEY] as GameData)
                 val dataStore = (this[DATA_STORE_KEY] as DataStore<SavedGame>)
+                val statisticsDatabase = (this[STATISTICS_DATABASE_KEY] as StatisticsDatabase)
+                val gameTimestamp = (this[GAME_TIMESTAMP_KEY] as Long)
                 GameScreenViewModel(
                     savedStateHandle,
                     gameData,
-                    dataStore
+                    dataStore,
+                    statisticsDatabase,
+                    gameTimestamp
                 )
             }
         }

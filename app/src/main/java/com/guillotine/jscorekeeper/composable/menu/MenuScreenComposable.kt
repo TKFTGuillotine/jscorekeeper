@@ -17,12 +17,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.guillotine.jscorekeeper.FinalScreen
 import com.guillotine.jscorekeeper.data.GameModes
 import com.guillotine.jscorekeeper.GameScreen
@@ -30,11 +30,22 @@ import com.guillotine.jscorekeeper.PastGamesListScreen
 import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.data.SavedGame
 import com.guillotine.jscorekeeper.viewmodels.MenuScreenViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuScreenComposable(navController: NavHostController, savedGame: SavedGame? = null) {
-    val viewModel = MenuScreenViewModel()
+fun MenuScreenComposable(
+    navController: NavHostController,
+    savedGame: SavedGame? = null,
+    viewModel: MenuScreenViewModel
+) {
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(viewModel.attemptedLoadTimestamp) {
+        if (!viewModel.attemptedLoadTimestamp) {
+            viewModel.loadTimestamp()
+        }
+    }
+
     Scaffold(topBar = {
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
@@ -62,7 +73,7 @@ fun MenuScreenComposable(navController: NavHostController, savedGame: SavedGame?
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (viewModel.isSavedGame(savedGame)) {
-                    Button (
+                    Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             if (savedGame != null && savedGame.isFinal) {
@@ -70,13 +81,15 @@ fun MenuScreenComposable(navController: NavHostController, savedGame: SavedGame?
                                     FinalScreen(
                                         score = savedGame.score,
                                         round = savedGame.round,
-                                        currency = savedGame.gameData.currency
+                                        currency = savedGame.gameData.currency,
+                                        timestamp = viewModel.timestamp
                                     )
                                 )
                             } else {
                                 navController.navigate(
                                     GameScreen(
-                                        gameMode = GameModes.RESUME
+                                        gameMode = GameModes.RESUME,
+                                        timestamp = viewModel.timestamp
                                     )
                                 )
                             }
@@ -90,13 +103,16 @@ fun MenuScreenComposable(navController: NavHostController, savedGame: SavedGame?
                     // match the size of the largest button.
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-
-                        navController.navigate(
-                            GameScreen(
-                                gameMode = GameModes.USA
+                        scope.launch {
+                            viewModel.deleteSavedGame()
+                            viewModel.createGame(GameModes.USA)
+                            navController.navigate(
+                                GameScreen(
+                                    gameMode = GameModes.USA,
+                                    timestamp = viewModel.timestamp
+                                )
                             )
-                        )
-
+                        }
                     }
                 ) {
                     Text(stringResource(R.string.play_us_game))
@@ -104,12 +120,16 @@ fun MenuScreenComposable(navController: NavHostController, savedGame: SavedGame?
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        navController.navigate(
-                            GameScreen(
-                                gameMode = GameModes.UK
+                        scope.launch {
+                            viewModel.deleteSavedGame()
+                            viewModel.createGame(GameModes.UK)
+                            navController.navigate(
+                                GameScreen(
+                                    gameMode = GameModes.UK,
+                                    timestamp = viewModel.timestamp
+                                )
                             )
-                        )
-
+                        }
                     }
                 ) {
                     Text(stringResource(R.string.play_uk_game))
@@ -117,12 +137,16 @@ fun MenuScreenComposable(navController: NavHostController, savedGame: SavedGame?
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        navController.navigate(
-                            GameScreen(
-                                gameMode = GameModes.AUSTRALIA
+                        scope.launch {
+                            viewModel.deleteSavedGame()
+                            viewModel.createGame(GameModes.AUSTRALIA)
+                            navController.navigate(
+                                GameScreen(
+                                    gameMode = GameModes.AUSTRALIA,
+                                    timestamp = viewModel.timestamp
+                                )
                             )
-                        )
-
+                        }
                     }
                 ) {
                     Text(stringResource(R.string.play_au_game))
@@ -140,10 +164,4 @@ fun MenuScreenComposable(navController: NavHostController, savedGame: SavedGame?
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun MenuPreview() {
-    MenuScreenComposable(rememberNavController())
 }

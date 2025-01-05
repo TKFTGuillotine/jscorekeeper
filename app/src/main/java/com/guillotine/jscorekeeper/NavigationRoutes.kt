@@ -8,7 +8,8 @@ object MenuScreen
 
 @Serializable
 data class GameScreen(
-    val gameMode: GameModes
+    val gameMode: GameModes,
+    val timestamp: Long
 )
 
 @Serializable
@@ -16,6 +17,7 @@ data class FinalScreen(
     val score: Int,
     val round: Int,
     val currency: String,
+    val timestamp: Long
 )
 
 @Serializable
