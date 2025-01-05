@@ -4,7 +4,11 @@ plugins {
     // Required for Compose post-Kotlin 2.0.0.
     alias(libs.plugins.compose.compiler)
     // Plugin for kotlinx serializable, a dependency of Compose Navigation.
-    id("org.jetbrains.kotlin.plugin.serialization")
+    alias(libs.plugins.kotlinx.serialization)
+    // Plugin for Kotlin Symbol Processing, used by Room.
+    alias(libs.plugins.devtools.ksp)
+    // For Room
+    alias(libs.plugins.androidx.room)
 }
 
 android {
@@ -51,6 +55,9 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 }
 
 dependencies {
@@ -78,6 +85,11 @@ dependencies {
     implementation(libs.androidx.datastore)
     // For saving during onDestroy and guaranteeing it will complete.
     implementation(libs.androidx.work.runtime.ktx)
+    // For saving statistics to a proper database.
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    // For async Room (necessary seemingly, not sure why this is separate?)
+    implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

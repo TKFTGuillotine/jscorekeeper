@@ -1,7 +1,9 @@
 [versions]
-agp = "8.6.1"
+agp = "8.7.3"
 datastore = "1.1.1"
-kotlin = "2.0.0"
+kotlin = "2.0.21"
+ksp = "2.0.21-1.0.27"
+kotlinxSerialization = "2.0.20"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -14,13 +16,18 @@ composeBom = "2024.11.00"
 kotlinxSerializationCore = "1.7.3"
 lifecycleViewmodelCompose = "2.8.7"
 navigationCompose = "2.8.4"
+roomRuntime = "2.6.1"
 uiTextGoogleFonts = "1.7.5"
 workRuntimeKtx = "2.10.0"
+room = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 androidx-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -45,4 +52,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinxSerialization"}
+devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+androidx-room = {id = "androidx.room", version.ref = "room"}
 

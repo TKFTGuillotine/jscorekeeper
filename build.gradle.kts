@@ -5,5 +5,9 @@ plugins {
     // Must be added for Compose post-Kotlin 2.0.0
     alias(libs.plugins.compose.compiler) apply false
     // Plugin for kotlinx serializable, a dependency of Compose Navigation.
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.20"
+    alias(libs.plugins.kotlinx.serialization) apply false
+    // Plugin for Kotlin Symbol Processing, used by Room.
+    alias(libs.plugins.devtools.ksp) apply false
+    // Plugin for Room
+    alias(libs.plugins.androidx.room) apply false
 }
