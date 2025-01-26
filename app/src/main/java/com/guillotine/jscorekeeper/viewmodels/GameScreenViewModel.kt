@@ -18,10 +18,10 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.guillotine.jscorekeeper.composable.database.ClueEntity
-import com.guillotine.jscorekeeper.composable.database.ClueType
-import com.guillotine.jscorekeeper.composable.database.DailyDoubleEntity
-import com.guillotine.jscorekeeper.composable.database.StatisticsDatabase
+import com.guillotine.jscorekeeper.database.ClueEntity
+import com.guillotine.jscorekeeper.database.ClueType
+import com.guillotine.jscorekeeper.database.DailyDoubleEntity
+import com.guillotine.jscorekeeper.database.StatisticsDatabase
 import com.guillotine.jscorekeeper.data.RadioButtonOptions
 import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.data.GameData

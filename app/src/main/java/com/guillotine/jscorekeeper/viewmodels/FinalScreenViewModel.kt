@@ -1,8 +1,6 @@
 package com.guillotine.jscorekeeper.viewmodels
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -13,8 +11,8 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.guillotine.jscorekeeper.composable.database.FinalEntity
-import com.guillotine.jscorekeeper.composable.database.StatisticsDatabase
+import com.guillotine.jscorekeeper.database.FinalEntity
+import com.guillotine.jscorekeeper.database.StatisticsDatabase
 import com.guillotine.jscorekeeper.data.RadioButtonOptions
 import kotlinx.coroutines.launch
 
