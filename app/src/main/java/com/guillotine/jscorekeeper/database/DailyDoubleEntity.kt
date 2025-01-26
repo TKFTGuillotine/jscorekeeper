@@ -1,4 +1,4 @@
-package com.guillotine.jscorekeeper.composable.database
+package com.guillotine.jscorekeeper.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

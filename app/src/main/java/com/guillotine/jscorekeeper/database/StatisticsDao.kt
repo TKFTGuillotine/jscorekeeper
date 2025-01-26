@@ -1,10 +1,8 @@
-package com.guillotine.jscorekeeper.composable.database
+package com.guillotine.jscorekeeper.database
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Update
-import com.guillotine.jscorekeeper.data.GameModes
 
 @Dao
 interface StatisticsDao {

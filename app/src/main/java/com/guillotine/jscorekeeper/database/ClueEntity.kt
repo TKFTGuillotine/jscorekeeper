@@ -1,4 +1,4 @@
-package com.guillotine.jscorekeeper.composable.database
+package com.guillotine.jscorekeeper.database
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
