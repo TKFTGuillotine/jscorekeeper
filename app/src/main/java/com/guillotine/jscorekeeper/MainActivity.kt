@@ -5,8 +5,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.datastore.dataStore
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
 import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
@@ -18,8 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import androidx.room.Room
-import com.guillotine.jscorekeeper.composable.database.GameEntity
-import com.guillotine.jscorekeeper.composable.database.StatisticsDatabase
+import com.guillotine.jscorekeeper.database.StatisticsDatabase
 import com.guillotine.jscorekeeper.composable.finalj.FinalScreenComposable
 import com.guillotine.jscorekeeper.composable.game.GameScreenComposable
 import com.guillotine.jscorekeeper.composable.menu.MenuScreenComposable
@@ -31,11 +38,8 @@ import com.guillotine.jscorekeeper.data.SavedGameSerializer
 import com.guillotine.jscorekeeper.ui.theme.JScorekeeperTheme
 import com.guillotine.jscorekeeper.viewmodels.FinalScreenViewModel
 import com.guillotine.jscorekeeper.viewmodels.GameScreenViewModel
-import com.guillotine.jscorekeeper.viewmodels.GameScreenViewModel.Companion.GAME_TIMESTAMP_KEY
-import com.guillotine.jscorekeeper.viewmodels.GameScreenViewModel.Companion.STATISTICS_DATABASE_KEY
 import com.guillotine.jscorekeeper.viewmodels.MenuScreenViewModel
 import kotlinx.coroutines.launch
-import kotlin.properties.Delegates
 
 class MainActivity : ComponentActivity() {
     private lateinit var gameScreenViewModel: GameScreenViewModel
@@ -61,7 +65,40 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = MenuScreen
+                    startDestination = MenuScreen,
+                    /* Despite my best efforts, it seems as though there's no real good way to
+                       implement the stock Android Predictive Back animation in Compose. Due to the
+                       way this works, the user has the ability to complete the animation before
+                       lifting their finger to complete the back action, rather than the animation
+                       being at a maximum halfway complete as it is in the stock configuration.
+
+                       With that in mind, that it is effectively impossible to implement the stock
+                       configuration, I'm using Google's own suggested animation combinations
+                       here instead, straight from the official Google docs.
+                    */
+                    popExitTransition = {
+                        scaleOut(
+                            targetScale = 0.9f,
+                            transformOrigin = TransformOrigin.Center
+                        ) + fadeOut(
+                            animationSpec = tween(
+                                easing = CubicBezierEasing(0.1f, 0.1f, 0f, 1f),
+                            )
+                        )
+                    },
+                    popEnterTransition = {
+                        scaleIn(
+                            initialScale = 1.1F,
+                        ) // Fade in from the official docs removed to avoid background flash.
+                    },
+                    // This one is just a guess.
+                    enterTransition = {
+                        slideIntoContainer(
+                            towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(300)
+                        )
+                    },
+                    exitTransition = { ExitTransition.None },
                 ) {
                     composable<MenuScreen> { navBackStackEntry ->
                         val extras = MutableCreationExtras().apply {
@@ -73,7 +110,11 @@ class MainActivity : ComponentActivity() {
                             factory = MenuScreenViewModel.Factory,
                             extras = extras
                         )
-                        MenuScreenComposable(navController, savedGame.value, menuScreenViewModel)
+                        MenuScreenComposable(
+                            navController,
+                            savedGame.value,
+                            menuScreenViewModel
+                        )
                     }
                     composable<GameScreen> { navBackStackEntry ->
                         val route: GameScreen = navBackStackEntry.toRoute<GameScreen>()
@@ -106,7 +147,10 @@ class MainActivity : ComponentActivity() {
                     composable<FinalScreen> { navBackStackEntry ->
                         val route: FinalScreen = navBackStackEntry.toRoute<FinalScreen>()
                         val extras = MutableCreationExtras().apply {
-                            set(FinalScreenViewModel.STATISTICS_DATABASE_KEY, statisticsDatabase)
+                            set(
+                                FinalScreenViewModel.STATISTICS_DATABASE_KEY,
+                                statisticsDatabase
+                            )
                             set(FinalScreenViewModel.GAME_TIMESTAMP_KEY, route.timestamp)
                             set(SAVED_STATE_REGISTRY_OWNER_KEY, navBackStackEntry)
                             set(VIEW_MODEL_STORE_OWNER_KEY, navBackStackEntry)
