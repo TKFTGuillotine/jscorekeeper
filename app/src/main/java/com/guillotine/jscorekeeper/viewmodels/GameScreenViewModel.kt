@@ -55,6 +55,10 @@ class GameScreenViewModel(
     private var savedGameData: GameData
 
     init {
+        /* Bundle stuff has nothing to do with resuming a saved game and everything to do with
+           restoring state when the app is killed in the background and revisited by the user.
+           That's why it's tied into savedStateHandle. It's just dealing with things more complex
+           than saveable can manage. */
         val gameDataBundle = savedStateHandle.get<Bundle>("game_data")
         savedGameData =
             if (gameDataBundle != null) {
@@ -175,6 +179,24 @@ class GameScreenViewModel(
                 }
             }
         }
+        // If not, we need to initialize a new game as the saved game.
+        else {
+            viewModelScope.launch {
+                saveGame()
+            }
+        }
+    }
+
+    fun getMultipliers(): IntArray {
+        return multipliers
+    }
+
+    fun getBaseMoneyValues(): IntArray {
+        return baseMoneyValues
+    }
+
+    fun getColumns(): Int {
+        return columns
     }
 
     fun isWagerValid(wager: Int): Boolean {
@@ -390,10 +412,9 @@ class GameScreenViewModel(
         clueDialogState = ClueDialogState.DAILY_DOUBLE_WAGER
     }
 
-    // Will be called from the Activity on app closure. Could potentially be killed before finish,
-    // but it seems quick enough that I can probably get away with it. Trying to do DataStore using
-    // WorkManager seems like a huge pain and I want to use both this and Room just to say that I
-    // have.
+    /* Should be called constantly after every action taken in the game to ensure it is constantly
+       saved properly
+     */
     private fun saveGame() {
         viewModelScope.launch {
             dataStore.updateData {

@@ -11,9 +11,11 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.guillotine.jscorekeeper.data.GameData
 import com.guillotine.jscorekeeper.database.FinalEntity
 import com.guillotine.jscorekeeper.database.StatisticsDatabase
 import com.guillotine.jscorekeeper.data.RadioButtonOptions
+import com.guillotine.jscorekeeper.database.ScoreEntity
 import kotlinx.coroutines.launch
 
 @OptIn(SavedStateHandleSaveableApi::class)
@@ -33,7 +35,7 @@ class FinalScreenViewModel(
     var score by savedStateHandle.saveable { mutableStateOf(0) }
     var currency by savedStateHandle.saveable { mutableStateOf("$") }
 
-    fun submitFinalWager(wager: Int, score: Int, isCorrect: Boolean): Int? {
+    fun submitFinalWager(wager: Int, score: Int, isCorrect: Boolean): Long? {
         if ((wager in 0..score) || wager == 0) {
             viewModelScope.launch {
                 statisticsDatabase.statisticsDao().insertFinal(
@@ -46,11 +48,27 @@ class FinalScreenViewModel(
                 statisticsDatabase.statisticsDao().setVisible(gameTimestamp)
             }
             if (isCorrect) {
+                viewModelScope.launch {
+                    statisticsDatabase.statisticsDao().insertScore(
+                        ScoreEntity(
+                            timestamp = gameTimestamp,
+                            score = score + wager
+                        )
+                    )
+                }
                 isGameComplete = true
-                return score + wager
+                return gameTimestamp
             } else {
+                viewModelScope.launch {
+                    statisticsDatabase.statisticsDao().insertScore(
+                        ScoreEntity(
+                            timestamp = gameTimestamp,
+                            score = score - wager
+                        )
+                    )
+                }
                 isGameComplete = true
-                return score - wager
+                return gameTimestamp
             }
         }
         isShowError = true

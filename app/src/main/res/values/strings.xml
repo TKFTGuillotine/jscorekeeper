@@ -18,6 +18,7 @@
     <string name="incorrect">Incorrect</string>
     <string name="pass">Pass</string>
     <string name="daily_double">Daily Double</string>
+    <string name="daily_doubles">Daily Doubles</string>
     <string name="enter_wager">Enter wager</string>
     <string name="wager_invalid">Please enter a valid wager.</string>
     <string name="submit">Submit</string>
@@ -39,4 +40,8 @@
 
     <!-- Content Descriptions -->
     <string name="warning_icon_description">Warning Icon</string>
+    <string name="correct_icon_description">Checkmark Icon</string>
+    <string name="incorrect_icon_description">X Icon</string>
+    <string name="pass_icon_description">Pass Icon</string>
+    <string name="daily_double_icon_description">Daily Double Icon</string>
 </resources>

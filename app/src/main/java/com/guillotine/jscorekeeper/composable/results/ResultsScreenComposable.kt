@@ -20,18 +20,15 @@ import androidx.navigation.NavHostController
 import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.ResultsScreen
 import com.guillotine.jscorekeeper.data.SavedGameSerializer
+import com.guillotine.jscorekeeper.viewmodels.ResultsScreenViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultsScreenComposable(
-    navController: NavHostController,
-    route: ResultsScreen,
+    viewModel: ResultsScreenViewModel,
 ) {
-    val score = route.score
-
-
 
     Scaffold(
         topBar = {
@@ -48,11 +45,11 @@ fun ResultsScreenComposable(
     ) { innerPadding ->
         when (LocalConfiguration.current.orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> {
-                ResultsHorizontalComposable(score, innerPadding)
+                ResultsHorizontalComposable(viewModel, innerPadding)
             }
 
             else -> {
-                ResultsVerticalComposable(score, innerPadding)
+                ResultsVerticalComposable(viewModel, innerPadding)
             }
         }
     }

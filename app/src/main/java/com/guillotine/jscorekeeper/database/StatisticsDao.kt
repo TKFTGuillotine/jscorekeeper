@@ -12,6 +12,21 @@ interface StatisticsDao {
     @Query("SELECT * FROM games WHERE visible=0 LIMIT 1")
     suspend fun getSavedGame(): GameEntity?
 
+    @Query("SELECT * FROM games WHERE timestamp=:timestamp")
+    suspend fun getGame(timestamp: Long): GameEntity?
+
+    @Query("SELECT scores.timestamp, scores.score FROM games, scores WHERE games.visible=1 AND games.timestamp=scores.timestamp ORDER BY scores.timestamp DESC")
+    suspend fun getScoresList(): List<ScoreEntity>
+
+    @Query("SELECT * FROM clues WHERE timestamp=:timestamp")
+    suspend fun getClues(timestamp: Long): List<ClueEntity>
+
+    @Query("SELECT * FROM daily_doubles WHERE timestamp=:timestamp")
+    suspend fun getDailyDoubles(timestamp: Long): List<DailyDoubleEntity>
+
+    @Query("SELECT * FROM finals WHERE timestamp=:timestamp")
+    suspend fun getFinal(timestamp: Long): FinalEntity?
+
     @Query("DELETE FROM games WHERE visible=0")
     suspend fun deleteSavedGame()
 
@@ -30,4 +45,7 @@ interface StatisticsDao {
     @Insert
     // can't call it final haha
     suspend fun insertFinal(finalClue: FinalEntity)
+
+    @Insert
+    suspend fun insertScore(score: ScoreEntity)
 }

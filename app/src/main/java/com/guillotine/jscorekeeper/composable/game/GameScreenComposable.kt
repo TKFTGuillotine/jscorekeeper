@@ -65,6 +65,9 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
                     currency = viewModel.currency,
                     score = viewModel.score,
                     round = viewModel.round,
+                    moneyValues = viewModel.getBaseMoneyValues(),
+                    multipliers = viewModel.getMultipliers(),
+                    columns = viewModel.getColumns(),
                     timestamp = viewModel.gameTimestamp
                 )
             ) {

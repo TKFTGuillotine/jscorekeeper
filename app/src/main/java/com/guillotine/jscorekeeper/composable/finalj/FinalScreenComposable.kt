@@ -59,6 +59,9 @@ fun FinalScreenComposable(
                     isShowError = viewModel.isShowError,
                     submitFinalWager = viewModel::submitFinalWager,
                     currency = viewModel.currency,
+                    moneyValues = route.moneyValues,
+                    multipliers = route.multipliers,
+                    columns = route.columns,
                     navController = navController
                 )
             }
@@ -74,6 +77,9 @@ fun FinalScreenComposable(
                     isShowError = viewModel.isShowError,
                     submitFinalWager = viewModel::submitFinalWager,
                     currency = viewModel.currency,
+                    moneyValues = route.moneyValues,
+                    multipliers = route.multipliers,
+                    columns = route.columns,
                     navController = navController
                 )
             }

@@ -39,14 +39,18 @@ import com.guillotine.jscorekeeper.ui.theme.JScorekeeperTheme
 import com.guillotine.jscorekeeper.viewmodels.FinalScreenViewModel
 import com.guillotine.jscorekeeper.viewmodels.GameScreenViewModel
 import com.guillotine.jscorekeeper.viewmodels.MenuScreenViewModel
+import com.guillotine.jscorekeeper.viewmodels.ResultsScreenViewModel
 import kotlinx.coroutines.launch
+
+// For some reason this apparently duplicates sometimes if it's contained within the class.
+private val Context.dataStore by dataStore("saved_game.json", SavedGameSerializer)
 
 class MainActivity : ComponentActivity() {
     private lateinit var gameScreenViewModel: GameScreenViewModel
     private lateinit var finalScreenViewModel: FinalScreenViewModel
     private lateinit var menuScreenViewModel: MenuScreenViewModel
+    private lateinit var resultsScreenViewModel: ResultsScreenViewModel
 
-    private val Context.dataStore by dataStore("saved_game.json", SavedGameSerializer)
     private lateinit var statisticsDatabase: StatisticsDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +59,11 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             StatisticsDatabase::class.java,
             "statistics_database"
-        ).build()
+            /* THIS IS DANGEROUS but also probably in this case not really, this app is super low-
+               stakes, and even then it's not likely this database will change much once the app
+               is finished anyways.
+             */
+        ).fallbackToDestructiveMigration().build()
         enableEdgeToEdge()
         setContent {
             JScorekeeperTheme {
@@ -120,13 +128,6 @@ class MainActivity : ComponentActivity() {
                         val route: GameScreen = navBackStackEntry.toRoute<GameScreen>()
                         val gameMode = route.gameMode
                         val gameData = processGameData(applicationContext, gameMode)
-                        if (gameMode != GameModes.RESUME) {
-                            // Data has already been deleted from Room by the menu screen, but to
-                            // simplify things, we'll write the new game to the DataStore here.
-                            lifecycleScope.launch {
-                                writeNewSavedGame(gameData)
-                            }
-                        }
                         val extras = MutableCreationExtras().apply {
                             set(
                                 GameScreenViewModel.GAME_DATA_KEY,
@@ -169,7 +170,24 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                        ResultsScreenComposable(navController, route)
+                        val extras = MutableCreationExtras().apply {
+                            set(ResultsScreenViewModel.DATABASE_KEY, statisticsDatabase)
+                            set(ResultsScreenViewModel.TIMESTAMP_KEY, route.timestamp)
+                            set(ResultsScreenViewModel.SCORE_KEY, route.score)
+                            set(ResultsScreenViewModel.MONEY_VALUES_KEY, route.moneyValues)
+                            set(ResultsScreenViewModel.MULTIPLIERS_KEY, route.multipliers)
+                            set(ResultsScreenViewModel.COLUMNS_KEY, route.columns)
+                            set(ResultsScreenViewModel.CURRENCY_KEY, route.currency)
+                            set(SAVED_STATE_REGISTRY_OWNER_KEY, navBackStackEntry)
+                            set(VIEW_MODEL_STORE_OWNER_KEY, navBackStackEntry)
+                        }
+
+                        resultsScreenViewModel = viewModel(
+                            factory = ResultsScreenViewModel.Factory,
+                            extras = extras,
+                        )
+
+                        ResultsScreenComposable(resultsScreenViewModel)
                     }
                     composable<PastGamesListScreen> {
                         Text("History Screen!")
@@ -206,30 +224,6 @@ class MainActivity : ComponentActivity() {
         }
 
         return GameData(moneyValues, rounds, currency, columns)
-    }
-
-    private suspend fun writeNewSavedGame(gameData: GameData) {
-        val defaultValues = SavedGame(
-            gameData = gameData,
-            savedMoneyValues = gameData.moneyValues,
-            score = 0,
-            round = 0,
-            columnsPerValue = mutableMapOf<Int, Int>().toMutableMap(),
-            remainingDailyDoubles = gameData.multipliers[0],
-            isFinal = false,
-            clueIndex = 0
-        )
-        dataStore.updateData {
-            it.copy(
-                gameData = defaultValues.gameData,
-                savedMoneyValues = defaultValues.savedMoneyValues,
-                score = defaultValues.score,
-                round = defaultValues.round,
-                columnsPerValue = defaultValues.columnsPerValue,
-                remainingDailyDoubles = defaultValues.remainingDailyDoubles,
-                isFinal = defaultValues.isFinal,
-            )
-        }
     }
 
     private suspend fun deleteSavedGame() {

@@ -24,6 +24,10 @@ class MenuScreenViewModel(
     var timestamp by mutableStateOf(0L)
         private set
 
+    init {
+        println("MenuScreenViewModel init")
+    }
+
     fun isSavedGame(savedGame: SavedGame?): Boolean {
         // Arbitrary, but it would be impossible to have a board with no columns, so this being a
         // default value in the serializer, it's an easy way to tell if there's a game or not.

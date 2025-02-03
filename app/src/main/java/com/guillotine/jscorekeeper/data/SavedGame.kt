@@ -16,7 +16,8 @@ data class SavedGame(
     val columnsPerValue: MutableMap<Int, Int>,
     val remainingDailyDoubles: Int,
     val isFinal: Boolean,
-    val clueIndex: Int
+    val clueIndex: Int,
+    //val timestamp: Long
 )
 
 object SavedGameSerializer : Serializer<SavedGame> {
@@ -36,7 +37,8 @@ object SavedGameSerializer : Serializer<SavedGame> {
             columnsPerValue = mutableMapOf<Int, Int>().toMutableMap(),
             remainingDailyDoubles = 0,
             isFinal = false,
-            clueIndex = 0
+            clueIndex = 0,
+            //timestamp = 0
             )
 
     override suspend fun readFrom(input: InputStream): SavedGame {

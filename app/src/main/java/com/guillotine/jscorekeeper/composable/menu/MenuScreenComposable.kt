@@ -72,6 +72,7 @@ fun MenuScreenComposable(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // If the savedGame passed in by the Activity has 0 columns (meaning it's saved).
                 if (viewModel.isSavedGame(savedGame)) {
                     Button(
                         modifier = Modifier.fillMaxWidth(),
@@ -82,6 +83,9 @@ fun MenuScreenComposable(
                                         score = savedGame.score,
                                         round = savedGame.round,
                                         currency = savedGame.gameData.currency,
+                                        moneyValues = savedGame.gameData.moneyValues,
+                                        multipliers = savedGame.gameData.multipliers,
+                                        columns = savedGame.gameData.columns,
                                         timestamp = viewModel.timestamp
                                     )
                                 )
@@ -89,6 +93,7 @@ fun MenuScreenComposable(
                                 navController.navigate(
                                     GameScreen(
                                         gameMode = GameModes.RESUME,
+                                        // The important bit that won't get overwritten.
                                         timestamp = viewModel.timestamp
                                     )
                                 )

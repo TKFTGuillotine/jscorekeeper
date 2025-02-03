@@ -9,15 +9,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavHostController
 import com.guillotine.jscorekeeper.R
+import com.guillotine.jscorekeeper.viewmodels.ResultsScreenViewModel
 
 @Composable
-fun ResultsHorizontalComposable(score: Int, innerPadding: PaddingValues) {
+fun ResultsHorizontalComposable(
+    viewModel: ResultsScreenViewModel,
+    innerPadding: PaddingValues
+) {
     Row(
         modifier = Modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Text("${stringResource(R.string.score)}: $score")
+        Text("placeholder")
     }
 }

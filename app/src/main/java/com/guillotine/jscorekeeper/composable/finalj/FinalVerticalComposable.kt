@@ -27,6 +27,7 @@ import com.guillotine.jscorekeeper.composable.general.ScoreCardComposable
 import com.guillotine.jscorekeeper.composable.general.WagerFieldComposable
 import com.guillotine.jscorekeeper.data.RadioButtonOptions
 import com.guillotine.jscorekeeper.composable.general.RadioButtonList
+import com.guillotine.jscorekeeper.data.GameData
 
 @Composable
 fun FinalVerticalComposable(
@@ -38,7 +39,10 @@ fun FinalVerticalComposable(
     setWagerText: (String) -> Unit,
     isShowError: Boolean,
     currency: String,
-    submitFinalWager: (Int, Int, Boolean) -> Int?,
+    submitFinalWager: (Int, Int, Boolean) -> Long?,
+    moneyValues: IntArray,
+    multipliers: IntArray,
+    columns: Int,
     navController: NavHostController
 ) {
     Column(
@@ -120,15 +124,20 @@ fun FinalVerticalComposable(
                     .padding(start = 0.dp, end = 0.dp)
                     .fillMaxWidth(),
                 onClick = {
-                    val updatedScore = submitFinalWager(
+                    val timestamp = submitFinalWager(
                         wagerText.toInt(),
                         score,
                         currentSelectedOption == RadioButtonOptions.CORRECT
                     )
-                    if (updatedScore != null) {
+                    if (timestamp != null) {
                         navController.navigate(
                             route = ResultsScreen(
-                                score = updatedScore,
+                                timestamp = timestamp,
+                                score = score,
+                                moneyValues = moneyValues,
+                                multipliers = multipliers,
+                                currency = currency,
+                                columns = columns,
                                 deleteCurrentSavedGame = true
                             )
                         ) {
@@ -143,25 +152,4 @@ fun FinalVerticalComposable(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun FinalVerticalComposablePreview() {
-    FinalVerticalComposable(
-        innerPadding = PaddingValues(0.dp),
-        score = 1000,
-        currentSelectedOption = RadioButtonOptions.CORRECT,
-        onOptionSelected = {},
-        wagerText = "10",
-        setWagerText = {},
-        isShowError = false,
-        currency = "$",
-        submitFinalWager = ::dummyWagerSubmitFunction,
-        navController = NavHostController(LocalContext.current)
-    )
-}
-
-fun dummyWagerSubmitFunction(int: Int, int2: Int, boolean: Boolean): Int? {
-    return 1
 }
