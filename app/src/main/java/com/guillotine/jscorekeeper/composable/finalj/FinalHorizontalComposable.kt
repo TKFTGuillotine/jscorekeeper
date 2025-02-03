@@ -125,7 +125,7 @@ fun FinalHorizontalComposable(
                             navController.navigate(
                                 route = ResultsScreen(
                                     timestamp = timestamp,
-                                    score = score,
+                                    score = if (currentSelectedOption == RadioButtonOptions.CORRECT) {score + wagerText.toInt()} else {score - wagerText.toInt()},
                                     moneyValues = moneyValues,
                                     multipliers = multipliers,
                                     currency = currency,
