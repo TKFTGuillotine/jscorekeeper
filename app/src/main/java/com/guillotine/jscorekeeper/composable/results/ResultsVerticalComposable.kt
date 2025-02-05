@@ -51,7 +51,15 @@ fun ResultsVerticalComposable(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(0.25f)
-        ) { ResultsGraphComposable(viewModel.scoreChanges, graphColor, modifier = Modifier.fillMaxWidth().padding(startEndPadding)) }
+        ) {
+            ResultsGraphComposable(
+                viewModel.scoreChanges,
+                graphColor,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(startEndPadding)
+            )
+        }
         /* Could probably be a LazyColumn but there's not *that* much data and I don't wanna deal
            with it.
          */
@@ -65,223 +73,28 @@ fun ResultsVerticalComposable(
                 stringResource(R.string.final_score),
                 style = MaterialTheme.typography.headlineSmall,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = roundColumnPaddingValue).fillMaxWidth()
+                modifier = Modifier
+                    .padding(bottom = roundColumnPaddingValue)
+                    .fillMaxWidth()
             )
             ScoreCardTheme {
-                ScoreCardComposable(viewModel.getCurrency(), viewModel.getScore(), true, modifier = Modifier.fillMaxWidth())
+                ScoreCardComposable(
+                    viewModel.getCurrency(),
+                    viewModel.getScore(),
+                    true,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
-            // Each round gets its own column.
-            for (roundNumber in viewModel.cluesByRound.indices) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = roundColumnPaddingValue),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Each round column gets a row for the round header.
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth().padding(bottom = roundColumnPaddingValue),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(stringResource(R.string.round) + " " + (roundNumber + 1))
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Each round gets one column for each value.
-                        for (j in 0..(viewModel.cluesByRound[roundNumber].size - 1)) {
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f),
-                                verticalArrangement = Arrangement.Top,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                // Each value column gets a value header.
-                                HorizontalDivider(Modifier.fillMaxWidth())
-                                Text(viewModel.getCurrency() + viewModel.getValues()[j] * viewModel.getMultipliers()[roundNumber])
-                                HorizontalDivider(Modifier.fillMaxWidth())
-                            }
-                        }
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Each round gets one column for each value.
-                        for (j in 0..(viewModel.cluesByRound[roundNumber].size - 1)) {
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f),
-                                verticalArrangement = Arrangement.Top,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                // Each value column gets the icons for each result.
-                                for (clue in viewModel.cluesByRound[roundNumber][j]) {
-                                    when (clue) {
-                                        ClueType.CORRECT -> {
-                                            Image(
-                                                painter = painterResource(R.drawable.baseline_check_24),
-                                                contentDescription = stringResource(R.string.correct_icon_description)
-                                            )
-                                            HorizontalDivider(Modifier.fillMaxWidth())
-                                        }
-
-                                        ClueType.INCORRECT -> {
-                                            Image(
-                                                painter = painterResource(R.drawable.baseline_clear_24),
-                                                contentDescription = stringResource(R.string.incorrect_icon_description)
-                                            )
-                                            HorizontalDivider(Modifier.fillMaxWidth())
-                                        }
-
-                                        ClueType.PASS -> {
-                                            Image(
-                                                painter = painterResource(R.drawable.baseline_block_24),
-                                                contentDescription = stringResource(R.string.correct_icon_description)
-                                            )
-                                            HorizontalDivider(Modifier.fillMaxWidth())
-                                        }
-
-                                        ClueType.DAILY_DOUBLE -> {
-                                            Image(
-                                                painter = painterResource(R.drawable.baseline_star_24),
-                                                contentDescription = stringResource(R.string.daily_double_icon_description)
-                                            )
-                                            HorizontalDivider(Modifier.fillMaxWidth())
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            // Daily Doubles get a column.
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = roundColumnPaddingValue),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth().padding(bottom = roundColumnPaddingValue),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(stringResource(R.string.daily_doubles))
-                }
-                HorizontalDivider(Modifier.fillMaxWidth())
-                for (dailyDouble in viewModel.dailyDoubles) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(start = startEndPadding)
-                                .weight(1f),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(stringResource(R.string.round) + " " + (dailyDouble.round + 1))
-                        }
-                        Row(
-                            modifier = Modifier.weight(1f),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(viewModel.getCurrency() + dailyDouble.wager.toString())
-                        }
-                        Row(
-                            modifier = Modifier
-                                .padding(end = startEndPadding)
-                                .weight(1f),
-                            horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            when (dailyDouble.wasCorrect) {
-                                true -> {
-                                    Image(
-                                        painter = painterResource(R.drawable.baseline_check_24),
-                                        contentDescription = stringResource(R.string.correct_icon_description)
-                                    )
-                                }
-
-                                false -> {
-                                    Image(
-                                        painter = painterResource(R.drawable.baseline_clear_24),
-                                        contentDescription = stringResource(R.string.incorrect_icon_description)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    HorizontalDivider(Modifier.fillMaxWidth())
-                }
-            }
-
-            // Final gets a column
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = roundColumnPaddingValue),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth().padding(bottom = roundColumnPaddingValue),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(stringArrayResource(R.array.round_names_indexed_by_multiplier)[0])
-                }
-                HorizontalDivider(Modifier.fillMaxWidth())
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(start = startEndPadding)
-                            .weight(1f),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(viewModel.getCurrency() + viewModel.finalEntity?.wager)
-
-                        when (viewModel.finalEntity?.correct) {
-                            true -> {
-                                Image(
-                                    painter = painterResource(R.drawable.baseline_check_24),
-                                    contentDescription = stringResource(R.string.correct_icon_description)
-                                )
-                            }
-
-                            false -> {
-                                Image(
-                                    painter = painterResource(R.drawable.baseline_clear_24),
-                                    contentDescription = stringResource(R.string.incorrect_icon_description)
-                                )
-                            }
-
-                            null -> {}
-                        }
-                    }
-                }
-                HorizontalDivider(Modifier.fillMaxWidth())
-            }
+            ResultsStatsColumnComposable(
+                roundColumnPaddingValue,
+                startEndPadding,
+                viewModel.cluesByRound,
+                viewModel.getCurrency(),
+                viewModel.getValues(),
+                viewModel.getMultipliers(),
+                viewModel.dailyDoubles,
+                viewModel.finalEntity
+            )
         }
     }
 }
@@ -590,7 +403,8 @@ fun NestedLayoutTestComposable() {
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth().padding(bottom = 10.dp),
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
