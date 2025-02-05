@@ -5,22 +5,30 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.guillotine.jscorekeeper.R
+import com.guillotine.jscorekeeper.composable.general.ScoreCardComposable
 import com.guillotine.jscorekeeper.database.ClueType
+import com.guillotine.jscorekeeper.ui.theme.ScoreCardTheme
 import com.guillotine.jscorekeeper.viewmodels.ResultsScreenViewModel
 
 @Composable
@@ -30,6 +38,7 @@ fun ResultsVerticalComposable(
 ) {
     val roundColumnPaddingValue = 10.dp
     val startEndPadding = 8.dp
+    val graphColor = MaterialTheme.colorScheme.primary
 
     Column(
         modifier = Modifier
@@ -42,7 +51,7 @@ fun ResultsVerticalComposable(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(0.25f)
-        ) { Text("Graph goes here.") }
+        ) { ResultsGraphComposable(viewModel.scoreChanges, graphColor, modifier = Modifier.fillMaxWidth().padding(startEndPadding)) }
         /* Could probably be a LazyColumn but there's not *that* much data and I don't wanna deal
            with it.
          */
@@ -52,6 +61,15 @@ fun ResultsVerticalComposable(
                 .weight(0.75f)
                 .verticalScroll(rememberScrollState())
         ) {
+            Text(
+                stringResource(R.string.final_score),
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = roundColumnPaddingValue).fillMaxWidth()
+            )
+            ScoreCardTheme {
+                ScoreCardComposable(viewModel.getCurrency(), viewModel.getScore(), true, modifier = Modifier.fillMaxWidth())
+            }
             // Each round gets its own column.
             for (roundNumber in viewModel.cluesByRound.indices) {
                 Column(
@@ -64,7 +82,7 @@ fun ResultsVerticalComposable(
                     // Each round column gets a row for the round header.
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth().padding(bottom = roundColumnPaddingValue),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -84,7 +102,9 @@ fun ResultsVerticalComposable(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 // Each value column gets a value header.
+                                HorizontalDivider(Modifier.fillMaxWidth())
                                 Text(viewModel.getCurrency() + viewModel.getValues()[j] * viewModel.getMultipliers()[roundNumber])
+                                HorizontalDivider(Modifier.fillMaxWidth())
                             }
                         }
                     }
@@ -109,6 +129,7 @@ fun ResultsVerticalComposable(
                                                 painter = painterResource(R.drawable.baseline_check_24),
                                                 contentDescription = stringResource(R.string.correct_icon_description)
                                             )
+                                            HorizontalDivider(Modifier.fillMaxWidth())
                                         }
 
                                         ClueType.INCORRECT -> {
@@ -116,6 +137,7 @@ fun ResultsVerticalComposable(
                                                 painter = painterResource(R.drawable.baseline_clear_24),
                                                 contentDescription = stringResource(R.string.incorrect_icon_description)
                                             )
+                                            HorizontalDivider(Modifier.fillMaxWidth())
                                         }
 
                                         ClueType.PASS -> {
@@ -123,6 +145,7 @@ fun ResultsVerticalComposable(
                                                 painter = painterResource(R.drawable.baseline_block_24),
                                                 contentDescription = stringResource(R.string.correct_icon_description)
                                             )
+                                            HorizontalDivider(Modifier.fillMaxWidth())
                                         }
 
                                         ClueType.DAILY_DOUBLE -> {
@@ -130,6 +153,7 @@ fun ResultsVerticalComposable(
                                                 painter = painterResource(R.drawable.baseline_star_24),
                                                 contentDescription = stringResource(R.string.daily_double_icon_description)
                                             )
+                                            HorizontalDivider(Modifier.fillMaxWidth())
                                         }
                                     }
                                 }
@@ -148,12 +172,13 @@ fun ResultsVerticalComposable(
             ) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth().padding(bottom = roundColumnPaddingValue),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(stringResource(R.string.daily_doubles))
                 }
+                HorizontalDivider(Modifier.fillMaxWidth())
                 for (dailyDouble in viewModel.dailyDoubles) {
                     Row(
                         modifier = Modifier
@@ -201,6 +226,7 @@ fun ResultsVerticalComposable(
                             }
                         }
                     }
+                    HorizontalDivider(Modifier.fillMaxWidth())
                 }
             }
 
@@ -214,12 +240,13 @@ fun ResultsVerticalComposable(
             ) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth().padding(bottom = roundColumnPaddingValue),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(stringArrayResource(R.array.round_names_indexed_by_multiplier)[0])
                 }
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -253,73 +280,9 @@ fun ResultsVerticalComposable(
                         }
                     }
                 }
+                HorizontalDivider(Modifier.fillMaxWidth())
             }
-
         }
-        /*items(1) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(stringResource(R.string.daily_doubles))
-                for (dailyDouble in viewModel.dailyDoubles) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(stringResource(R.string.round) + " " + dailyDouble.round)
-                        Text(viewModel.getCurrency() + dailyDouble.wager.toString())
-                        when (dailyDouble.wasCorrect) {
-                            true -> {
-                                Icon(
-                                    painter = painterResource(R.drawable.baseline_check_24),
-                                    contentDescription = stringResource(R.string.correct_icon_description)
-                                )
-                            }
-                            false -> {
-                                Icon(
-                                    painter = painterResource(R.drawable.baseline_clear_24),
-                                    contentDescription = stringResource(R.string.incorrect_icon_description)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
-        /*items(1) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(stringArrayResource(R.array.round_names_indexed_by_multiplier)[0])
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(viewModel.getCurrency() + viewModel.finalEntity?.wager.toString())
-                    when (viewModel.finalEntity?.correct) {
-                        true -> {
-                            Icon(
-                                painter = painterResource(R.drawable.baseline_check_24),
-                                contentDescription = stringResource(R.string.correct_icon_description)
-                            )
-                        }
-                        false -> {
-                            Icon(
-                                painter = painterResource(R.drawable.baseline_clear_24),
-                                contentDescription = stringResource(R.string.incorrect_icon_description)
-                            )
-                        }
-                        null -> {}
-                    }
-                }
-            }
-        }*/
     }
 }
 
@@ -332,10 +295,19 @@ fun NestedLayoutTestComposable() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(
+            "Final Score:",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
+        ScoreCardTheme {
+            ScoreCardComposable("$", 15800, true, modifier = Modifier.fillMaxWidth())
+        }
         // Each round column gets a row for the round header.
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(top = 10.dp, bottom = 8.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -349,6 +321,7 @@ fun NestedLayoutTestComposable() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text("$200")
+                HorizontalDivider(Modifier.fillMaxWidth())
             }
             Column(
                 modifier = Modifier
@@ -357,6 +330,7 @@ fun NestedLayoutTestComposable() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text("$400")
+                HorizontalDivider(Modifier.fillMaxWidth())
             }
             Column(
                 modifier = Modifier
@@ -365,6 +339,7 @@ fun NestedLayoutTestComposable() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text("$600")
+                HorizontalDivider(Modifier.fillMaxWidth())
             }
             Column(
                 modifier = Modifier
@@ -373,6 +348,7 @@ fun NestedLayoutTestComposable() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text("$800")
+                HorizontalDivider(Modifier.fillMaxWidth())
             }
             Column(
                 modifier = Modifier
@@ -381,8 +357,10 @@ fun NestedLayoutTestComposable() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text("$1000")
+                HorizontalDivider(Modifier.fillMaxWidth())
             }
         }
+
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Column(
                 modifier = Modifier
@@ -394,22 +372,27 @@ fun NestedLayoutTestComposable() {
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_clear_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_block_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_star_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_star_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
 
             }
             Column(
@@ -422,22 +405,27 @@ fun NestedLayoutTestComposable() {
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
             }
             Column(
                 modifier = Modifier
@@ -449,22 +437,27 @@ fun NestedLayoutTestComposable() {
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
             }
             Column(
                 modifier = Modifier
@@ -476,22 +469,27 @@ fun NestedLayoutTestComposable() {
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
             }
             Column(
                 modifier = Modifier
@@ -503,22 +501,27 @@ fun NestedLayoutTestComposable() {
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
                 Image(
                     painter = painterResource(R.drawable.baseline_check_24),
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
+                HorizontalDivider(Modifier.fillMaxWidth())
             }
         }
 
@@ -532,12 +535,14 @@ fun NestedLayoutTestComposable() {
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(stringResource(R.string.daily_doubles))
             }
+            HorizontalDivider(Modifier.fillMaxWidth())
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -573,6 +578,7 @@ fun NestedLayoutTestComposable() {
                     )
                 }
             }
+            HorizontalDivider(Modifier.fillMaxWidth())
         }
 
         Column(
@@ -584,12 +590,13 @@ fun NestedLayoutTestComposable() {
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth().padding(bottom = 10.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(stringArrayResource(R.array.round_names_indexed_by_multiplier)[0])
             }
+            HorizontalDivider(Modifier.fillMaxWidth())
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -602,8 +609,7 @@ fun NestedLayoutTestComposable() {
                     contentDescription = stringResource(R.string.correct_icon_description)
                 )
             }
-
-
+            HorizontalDivider(Modifier.fillMaxWidth())
         }
     }
 }

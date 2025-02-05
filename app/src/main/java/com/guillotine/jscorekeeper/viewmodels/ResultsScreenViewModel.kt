@@ -48,8 +48,13 @@ class ResultsScreenViewModel(
         private set
     var finalEntity by savedStateHandle.saveable {mutableStateOf<FinalEntity?>(null)}
         private set
+    var scoreChanges by savedStateHandle.saveable {mutableStateOf(listOf<Int>())}
+        private set
     init {
         viewModelScope.launch {
+            dailyDoubles = statisticsDatabase.statisticsDao().getDailyDoubles(timestamp)
+            finalEntity = statisticsDatabase.statisticsDao().getFinal(timestamp)
+
             var mutableList: MutableList<MutableList<MutableList<ClueType>>> = mutableListOf()
             /* Initialize clues list to be prepared for append. -1 because size will go one past the
                last index, -1 again because the last index is 0 for Final and we want to treat that
@@ -60,9 +65,48 @@ class ResultsScreenViewModel(
                     mutableList[round].add(mutableListOf())
                 }
             }
+
             val clues = statisticsDatabase.statisticsDao().getClues(timestamp)
+            val changes = mutableListOf<Int>()
+            var dailyDoubleIndex = 0
             for (clue in clues) {
                 mutableList[clue.round][moneyValues.indexOf(clue.value / multipliers[clue.round])].add(clue.type)
+                when (clue.type) {
+                    ClueType.CORRECT -> {
+                        changes.add(clue.value)
+                    }
+                    ClueType.INCORRECT -> {
+                        changes.add(-clue.value)
+                    }
+                    ClueType.PASS -> {
+                        changes.add(0)
+                    }
+                    ClueType.DAILY_DOUBLE -> {
+                        when (dailyDoubles[dailyDoubleIndex].wasCorrect) {
+                            true -> {
+                                changes.add(dailyDoubles[dailyDoubleIndex].wager)
+                            }
+                            false -> {
+                                changes.add(-dailyDoubles[dailyDoubleIndex].wager)
+                            }
+                        }
+                        dailyDoubleIndex++
+                    }
+
+                }
+            }
+            if (finalEntity != null) {
+                when (finalEntity!!.correct) {
+                    true -> {
+                        changes.add(finalEntity!!.wager)
+                    }
+
+                    false -> {
+                        changes.add(-finalEntity!!.wager)
+                    }
+                }
+            } else {
+                changes.add(0)
             }
             // All non-entries are passes.
             for (round in 0..multipliers.size - 2) {
@@ -77,14 +121,16 @@ class ResultsScreenViewModel(
 
             // The state only changes if the outer container changes, so this changes the state.
             cluesByRound = mutableList
-
-            dailyDoubles = statisticsDatabase.statisticsDao().getDailyDoubles(timestamp)
-            finalEntity = statisticsDatabase.statisticsDao().getFinal(timestamp)
+            scoreChanges = changes
         }
     }
 
     fun getValues(): IntArray {
         return moneyValues
+    }
+
+    fun getScore(): Int {
+        return score
     }
 
     fun getMultipliers(): IntArray {
