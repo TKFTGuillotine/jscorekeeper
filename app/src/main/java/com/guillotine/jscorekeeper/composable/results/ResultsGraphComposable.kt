@@ -39,8 +39,10 @@ fun ResultsGraphComposable(
             // Normalize to 0-1, then scale to the height.
             val listOfPoints =
                 listOfScores.map { ((it.toFloat() - minScore.toFloat()) / (maxScore.toFloat() - minScore.toFloat()) * size.height) }
+            val startingY =
+                ((0f - minScore.toFloat()) / (maxScore.toFloat() - minScore.toFloat()) * size.height)
             val graphPath = Path().apply {
-                moveTo(0f, 0f)
+                moveTo(0f, startingY)
                 var currentX = 0f
                 // Scale such that the graph fits the width perfectly.
                 val xIncrement = size.width / (listOfPoints.size - 1)
