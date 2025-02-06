@@ -41,6 +41,10 @@ class ResultsScreenViewModel(
 ) : ViewModel() {
     /* Mutable outer list messes with mutableStateOf. Immutable inner list makes this nonfunctional.
        mutableStateListOf appears to be undelegatable somehow. This is the best solution I've got.
+
+       UPDATE: Eventually figured this out but seeing as this is an equally valid and functional
+       solution, I'm just going to leave it. mutableStateListOf is a different data type that you
+       assign rather than delegating and then just have to convert back and forth between a lot.
      */
     var cluesByRound by savedStateHandle.saveable {mutableStateOf(listOf<MutableList<MutableList<ClueType>>>())}
         private set
@@ -112,10 +116,10 @@ class ResultsScreenViewModel(
             for (round in 0..multipliers.size - 2) {
                 for (value in 0..moneyValues.size - 1) {
                     var cluesInValue = mutableList[round][value].size
-                    do {
+                    while(cluesInValue < columns) {
                         cluesInValue++
                         mutableList[round][value].add(ClueType.PASS)
-                    } while (cluesInValue < columns)
+                    }
                 }
             }
 
