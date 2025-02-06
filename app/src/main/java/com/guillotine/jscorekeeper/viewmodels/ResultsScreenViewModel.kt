@@ -46,13 +46,13 @@ class ResultsScreenViewModel(
        solution, I'm just going to leave it. mutableStateListOf is a different data type that you
        assign rather than delegating and then just have to convert back and forth between a lot.
      */
-    var cluesByRound by savedStateHandle.saveable {mutableStateOf(listOf<MutableList<MutableList<ClueType>>>())}
+    var cluesByRound by mutableStateOf(listOf<MutableList<MutableList<ClueType>>>())
         private set
-    var dailyDoubles by savedStateHandle.saveable {mutableStateOf(listOf<DailyDoubleEntity>())}
+    var dailyDoubles by mutableStateOf(listOf<DailyDoubleEntity>())
         private set
-    var finalEntity by savedStateHandle.saveable {mutableStateOf<FinalEntity?>(null)}
+    var finalEntity by mutableStateOf<FinalEntity?>(null)
         private set
-    var scoreChanges by savedStateHandle.saveable {mutableStateOf(listOf<Int>())}
+    var scoreChanges by mutableStateOf(listOf<Int>())
         private set
     init {
         viewModelScope.launch {
