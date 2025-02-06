@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.os.bundleOf
@@ -105,17 +106,19 @@ class GameScreenViewModel(
     private var baseMoneyValues = savedGameData.moneyValues
     private var columns = savedGameData.columns
 
-    // Initializes a map inline where each key is associated with columns.
-    private var columnsPerValue: MutableMap<Int, Int>
+    // This one is a unique data type and so doesn't delegate the same way, you just do an assign.
+    var columnsPerValue = mutableStateMapOf<Int, Int>()
+        private set
 
     init {
         val columnsPerValueBundle = savedStateHandle.get<Bundle>("columns_per_value")
-        columnsPerValue =
-            if (columnsPerValueBundle != null) {
-                columnsPerValueBundle.loadMap()
-            } else {
-                moneyValues.associateWith { columns }.toMutableMap()
-            }
+
+        if (columnsPerValueBundle != null) {
+            // Docs are a little opaque on this one but putAll is how you assign a regular map.
+            columnsPerValue.putAll(columnsPerValueBundle.loadMap())
+        } else {
+            columnsPerValue.putAll(moneyValues.associateWith { columns }.toMap())
+        }
         savedStateHandle.setSavedStateProvider("columns_per_value") {
             columnsPerValue.saveMap()
         }
@@ -168,7 +171,7 @@ class GameScreenViewModel(
                     round = it.round
                     moneyValues = it.savedMoneyValues
                     baseMoneyValues = it.gameData.moneyValues
-                    columnsPerValue = it.columnsPerValue
+                    columnsPerValue.putAll(it.columnsPerValue)
                     remainingDailyDoubles = it.remainingDailyDoubles
                     isFinal = it.isFinal
                     clueIndex = it.clueIndex
@@ -227,10 +230,6 @@ class GameScreenViewModel(
         )
     }
 
-    fun isValueRemaining(value: Int): Boolean {
-        return columnsPerValue[value] != 0
-    }
-
     fun showRoundDialog() {
         isShowRoundDialog = true
     }
@@ -275,7 +274,7 @@ class GameScreenViewModel(
             // map returns a List rather than an IntArray. Must convert.
             moneyValues = baseMoneyValues.map { it * multipliers[round] }.toIntArray()
             // Refresh columnsPerValue
-            columnsPerValue = moneyValues.associateWith { columns }.toMutableMap()
+            columnsPerValue.putAll( moneyValues.associateWith { columns }.toMap())
             isShowRoundDialog = false
         }
         saveGame()

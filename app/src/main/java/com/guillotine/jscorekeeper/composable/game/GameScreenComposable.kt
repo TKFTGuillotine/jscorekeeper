@@ -86,7 +86,7 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
                     score = viewModel.score,
                     onClueClick = { viewModel.showClueDialog(it) },
                     onNextRoundClick = { viewModel.showRoundDialog() },
-                    isRemainingValue = viewModel::isValueRemaining,
+                    isRemainingValue = {if (viewModel.columnsPerValue[it] != 0) {true} else {false} }
                 )
             }
 
@@ -98,7 +98,7 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
                     score = viewModel.score,
                     onClueClick = { viewModel.showClueDialog(it) },
                     onNextRoundClick = { viewModel.showRoundDialog() },
-                    isRemainingValue = viewModel::isValueRemaining,
+                    isRemainingValue = {if (viewModel.columnsPerValue[it] != 0) {true} else {false} }
                 )
             }
         }
