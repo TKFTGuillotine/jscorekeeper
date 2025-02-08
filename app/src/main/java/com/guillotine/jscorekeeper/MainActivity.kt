@@ -29,6 +29,7 @@ import androidx.room.Room
 import com.guillotine.jscorekeeper.database.StatisticsDatabase
 import com.guillotine.jscorekeeper.composable.finalj.FinalScreenComposable
 import com.guillotine.jscorekeeper.composable.game.GameScreenComposable
+import com.guillotine.jscorekeeper.composable.history.HistoryScreenComposable
 import com.guillotine.jscorekeeper.composable.menu.MenuScreenComposable
 import com.guillotine.jscorekeeper.composable.results.ResultsScreenComposable
 import com.guillotine.jscorekeeper.data.GameData
@@ -38,6 +39,7 @@ import com.guillotine.jscorekeeper.data.SavedGameSerializer
 import com.guillotine.jscorekeeper.ui.theme.JScorekeeperTheme
 import com.guillotine.jscorekeeper.viewmodels.FinalScreenViewModel
 import com.guillotine.jscorekeeper.viewmodels.GameScreenViewModel
+import com.guillotine.jscorekeeper.viewmodels.HistoryScreenViewModel
 import com.guillotine.jscorekeeper.viewmodels.MenuScreenViewModel
 import com.guillotine.jscorekeeper.viewmodels.ResultsScreenViewModel
 import kotlinx.coroutines.launch
@@ -50,6 +52,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var finalScreenViewModel: FinalScreenViewModel
     private lateinit var menuScreenViewModel: MenuScreenViewModel
     private lateinit var resultsScreenViewModel: ResultsScreenViewModel
+    private lateinit var historyScreenViewModel: HistoryScreenViewModel
 
     private lateinit var statisticsDatabase: StatisticsDatabase
 
@@ -189,8 +192,19 @@ class MainActivity : ComponentActivity() {
 
                         ResultsScreenComposable(resultsScreenViewModel)
                     }
-                    composable<PastGamesListScreen> {
-                        Text("History Screen!")
+                    composable<PastGamesListScreen> { navBackStackEntry ->
+                        val extras = MutableCreationExtras().apply {
+                            set(HistoryScreenViewModel.STATISTICS_DATABASE_KEY, statisticsDatabase)
+                            set(SAVED_STATE_REGISTRY_OWNER_KEY, navBackStackEntry)
+                            set(VIEW_MODEL_STORE_OWNER_KEY, navBackStackEntry)
+                        }
+
+                        historyScreenViewModel = viewModel(
+                            factory = HistoryScreenViewModel.Factory,
+                            extras = extras,
+                        )
+
+                        HistoryScreenComposable(historyScreenViewModel)
                     }
                 }
             }

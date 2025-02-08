@@ -29,6 +29,7 @@
     <string name="final_wager_instructions">Enter a value between 0 and your current score to wager on Final J!</string>
     <string name="results">Results</string>
     <string name="final_score">Final Score:</string>
+    <string name="history">History</string>
 
     <string-array name="round_names_indexed_by_multiplier">
         <item>Final J!</item>
