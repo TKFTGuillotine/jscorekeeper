@@ -11,15 +11,19 @@ espressoCore = "3.6.1"
 kotlinxCollectionsImmutable = "0.3.8"
 kotlinxSerializationJson = "1.7.3"
 lifecycleRuntimeKtx = "2.8.7"
-activityCompose = "1.9.3"
-composeBom = "2024.11.00"
+activityCompose = "1.10.0"
+composeBom = "2025.01.01"
 kotlinxSerializationCore = "1.7.3"
 lifecycleViewmodelCompose = "2.8.7"
-navigationCompose = "2.8.4"
+navigationCompose = "2.8.6"
 roomRuntime = "2.6.1"
-uiTextGoogleFonts = "1.7.5"
+uiTextGoogleFonts = "1.7.7"
 workRuntimeKtx = "2.10.0"
 room = "2.6.1"
+pagingCommonAndroid = "3.3.5"
+pagingRuntimeAndroid = "3.3.5"
+pagingComposeAndroid = "3.3.5"
+roomPaging = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +51,10 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinx-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinxSerializationCore"}
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+androidx-paging-common-android = { group = "androidx.paging", name = "paging-common-android", version.ref = "pagingCommonAndroid" }
+androidx-paging-runtime = {group = "androidx.paging", name = "paging-runtime", version.ref = "pagingRuntimeAndroid"}
+androidx-paging-compose = {group = "androidx.paging", name = "paging-compose", version.ref = "pagingComposeAndroid"}
+androidx-room-paging = {group = "androidx.room", name = "room-paging", version.ref = "roomPaging"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

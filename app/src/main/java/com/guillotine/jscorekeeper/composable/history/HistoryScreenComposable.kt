@@ -20,6 +20,11 @@ import androidx.compose.ui.res.stringResource
 import com.guillotine.jscorekeeper.R
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
+import com.guillotine.jscorekeeper.database.ScoreEntity
 import com.guillotine.jscorekeeper.viewmodels.HistoryScreenViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -27,8 +32,15 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreenComposable(viewModel: HistoryScreenViewModel) {
-    val scorePadding = 8.dp
+    val frontBackPadding = 8.dp
+    val topBottomPadding = 24.dp
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    lateinit var pagedScores: LazyPagingItems<ScoreEntity>
+
+    if (viewModel.isPagingSourceLoaded) {
+        pagedScores = viewModel.getGamesList().collectAsLazyPagingItems()
+    }
+
     Scaffold (topBar = {
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
@@ -45,25 +57,34 @@ fun HistoryScreenComposable(viewModel: HistoryScreenViewModel) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items (viewModel.gamesList) { game ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Column(
-                        modifier = Modifier.weight(1f).padding(start = scorePadding),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        Text(dateFormat.format(game.timestamp))
-                    }
-                    Column(
-                        modifier = Modifier.weight(1f).padding(end = scorePadding),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.End
-                    ) {
-                        Text(game.score.toString())
+            if (viewModel.isPagingSourceLoaded) {
+                items(
+                    count = pagedScores.itemCount,
+                    key = pagedScores.itemKey {it.timestamp}
+                ) { gameIndex ->
+                    val game = pagedScores[gameIndex]
+                    if (game != null) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(top = topBottomPadding, bottom = topBottomPadding),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                        ) {
+                            Column(
+                                modifier = Modifier.weight(1f).padding(start = frontBackPadding),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(dateFormat.format(game.timestamp))
+                            }
+                            Column(
+                                modifier = Modifier.weight(1f).padding(end = frontBackPadding),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.End
+                            ) {
+                                Text(game.score.toString())
+                            }
+                        }
                     }
                 }
             }

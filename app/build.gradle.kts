@@ -87,6 +87,10 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     // For saving statistics to a proper database.
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.paging.common.android)
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
+    implementation(libs.androidx.room.paging)
     ksp(libs.androidx.room.compiler)
     // For async Room (necessary seemingly, not sure why this is separate?)
     implementation(libs.androidx.room.ktx)

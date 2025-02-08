@@ -1,5 +1,6 @@
 package com.guillotine.jscorekeeper.database
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -17,6 +18,9 @@ interface StatisticsDao {
 
     @Query("SELECT scores.timestamp, scores.score FROM games, scores WHERE games.visible=1 AND games.timestamp=scores.timestamp ORDER BY scores.timestamp DESC")
     suspend fun getScoresList(): List<ScoreEntity>
+
+    @Query("SELECT scores.timestamp, scores.score FROM games, scores WHERE games.visible=1 AND games.timestamp=scores.timestamp ORDER BY scores.timestamp DESC")
+    fun getScoresPagingSource(): PagingSource<Int, ScoreEntity>
 
     @Query("SELECT * FROM clues WHERE timestamp=:timestamp")
     suspend fun getClues(timestamp: Long): List<ClueEntity>
