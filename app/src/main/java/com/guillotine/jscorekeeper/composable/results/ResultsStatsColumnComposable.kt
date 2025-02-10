@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.database.ClueType
@@ -65,7 +66,7 @@ fun ResultsStatsColumnComposable(
                     ) {
                         // Each value column gets a value header.
                         HorizontalDivider(Modifier.fillMaxWidth())
-                        Text(currency + values[j] * multipliers[roundNumber])
+                        Text(text = currency + values[j] * multipliers[roundNumber], maxLines = 1, overflow = TextOverflow.Ellipsis)
                         HorizontalDivider(Modifier.fillMaxWidth())
                     }
                 }
