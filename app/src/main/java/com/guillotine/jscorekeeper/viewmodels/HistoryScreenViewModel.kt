@@ -15,6 +15,8 @@ import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.guillotine.jscorekeeper.data.GameData
+import com.guillotine.jscorekeeper.data.GameModes
 import com.guillotine.jscorekeeper.database.ScoreEntity
 import com.guillotine.jscorekeeper.database.StatisticsDatabase
 import kotlinx.coroutines.flow.Flow
@@ -50,6 +52,10 @@ class HistoryScreenViewModel(private val statisticsDatabase: StatisticsDatabase)
 
     fun getGamesList(): Flow<PagingData<ScoreEntity>> {
         return getGamesPageData().cachedIn(viewModelScope)
+    }
+
+    suspend fun getGameMode(timestamp: Long): GameModes {
+        return statisticsDatabase.statisticsDao().getGame(timestamp)!!.gameMode
     }
 
     companion object {

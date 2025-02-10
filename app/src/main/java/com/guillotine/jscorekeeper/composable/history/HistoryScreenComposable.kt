@@ -1,8 +1,14 @@
 package com.guillotine.jscorekeeper.composable.history
 
+import android.content.Context
+import android.content.res.Configuration
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,27 +21,38 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import com.guillotine.jscorekeeper.R
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.integerArrayResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
+import com.guillotine.jscorekeeper.ResultsScreen
+import com.guillotine.jscorekeeper.data.GameData
+import com.guillotine.jscorekeeper.data.processGameData
 import com.guillotine.jscorekeeper.database.ScoreEntity
 import com.guillotine.jscorekeeper.viewmodels.HistoryScreenViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryScreenComposable(viewModel: HistoryScreenViewModel) {
+fun HistoryScreenComposable(viewModel: HistoryScreenViewModel, navigationController: NavHostController) {
     val frontBackPadding = 8.dp
     val topBottomPadding = 24.dp
+    val context = LocalContext.current
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     lateinit var pagedScores: LazyPagingItems<ScoreEntity>
+    val coroutineScope = rememberCoroutineScope()
 
     if (viewModel.isPagingSourceLoaded) {
         pagedScores = viewModel.getGamesList().collectAsLazyPagingItems()
@@ -53,7 +70,12 @@ fun HistoryScreenComposable(viewModel: HistoryScreenViewModel) {
         )
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.padding(innerPadding).fillMaxSize(),
+            modifier =
+                if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    Modifier.padding(innerPadding).padding(WindowInsets.displayCutout.asPaddingValues()).fillMaxSize()
+                } else {
+                    Modifier.padding(innerPadding).fillMaxSize()
+                },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -66,7 +88,26 @@ fun HistoryScreenComposable(viewModel: HistoryScreenViewModel) {
                     if (game != null) {
                         Row(
                             modifier = Modifier.fillMaxWidth()
-                                .padding(top = topBottomPadding, bottom = topBottomPadding),
+                                .padding(top = topBottomPadding, bottom = topBottomPadding).clickable {
+                                    coroutineScope.launch {
+                                        val gameData = processGameData(
+                                            applicationContext = context,
+                                            gameMode = viewModel.getGameMode(game.timestamp)
+                                        )
+
+                                        navigationController.navigate(
+                                            ResultsScreen(
+                                                timestamp = game.timestamp,
+                                                score = game.score,
+                                                moneyValues = gameData.moneyValues,
+                                                multipliers = gameData.multipliers,
+                                                columns = gameData.columns,
+                                                currency = gameData.currency,
+                                                deleteCurrentSavedGame = false
+                                            )
+                                        )
+                                    }
+                                },
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
                         ) {
