@@ -2,6 +2,8 @@ package com.guillotine.jscorekeeper.composable.game
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.composable.general.ScoreCardComposable
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GameBoardHorizontalComposable(
     innerPadding: PaddingValues,
@@ -49,19 +53,31 @@ fun GameBoardHorizontalComposable(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
+        FlowColumn(
             Modifier
                 .fillMaxHeight()
                 .weight(1f),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalArrangement = Arrangement.Absolute.Center
         ) {
-            ScoreCardComposable(currency, score, false, Modifier.width(200.dp))
-            Button(
-                onClick = { onNextRoundClick() },
-                Modifier.padding(top = 16.dp)
+            Row(
+                Modifier.fillMaxColumnWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = stringResource(R.string.next_round))
+                ScoreCardComposable(currency, score, false, Modifier.width(200.dp))
+            }
+            Row(
+                Modifier.fillMaxColumnWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = { onNextRoundClick() },
+                    Modifier.padding(top = 16.dp)
+                ) {
+                    Text(text = stringResource(R.string.next_round))
+                }
             }
         }
 
