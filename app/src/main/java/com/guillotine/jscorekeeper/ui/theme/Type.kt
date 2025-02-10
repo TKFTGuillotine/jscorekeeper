@@ -49,6 +49,12 @@ val ClueButtonTypography = Typography(
         fontFamily = bebasNeueFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 50.sp
+    ),
+
+    labelSmall = TextStyle(
+        fontFamily = bebasNeueFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 25.sp
     )
 )
 
