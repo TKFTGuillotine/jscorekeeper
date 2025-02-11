@@ -39,6 +39,7 @@ import com.guillotine.jscorekeeper.database.ScoreEntity
 import com.guillotine.jscorekeeper.viewmodels.HistoryScreenViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import androidx.compose.material3.HorizontalDivider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +88,7 @@ fun HistoryScreenComposable(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            item { HorizontalDivider() }
             if (viewModel.isPagingSourceLoaded) {
                 items(
                     count = pagedScores.itemCount,
@@ -140,6 +142,7 @@ fun HistoryScreenComposable(
                                 Text(game.score.toString())
                             }
                         }
+                        HorizontalDivider()
                     }
                 }
             }
