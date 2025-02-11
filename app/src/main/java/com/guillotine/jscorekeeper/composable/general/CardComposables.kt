@@ -9,8 +9,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -41,6 +46,12 @@ fun ScoreCardComposable(
     isFinal: Boolean,
     modifier: Modifier = Modifier
 ) {
+    /* An inelegant solution but since I can't use BasicText due to styling issues with a disabled
+       button, I'm going to shoehorn some state in here. If I wanted to do this super well I would
+       find a way to auto resize as a group, but frankly if one or two values are smaller than the
+       others, that's fine with me.
+     */
+    var resizeText by remember { mutableStateOf(false) }
 
     Card(
         shape = ShapeDefaults.ExtraSmall,
@@ -79,10 +90,20 @@ fun ScoreCardComposable(
                             (value * -1)
                         )
                     },
-                    style = if (isFinal) {
-                        MaterialTheme.typography.headlineSmall
-                    } else {
+                    maxLines = 1,
+                    onTextLayout = { result: TextLayoutResult ->
+                        if (result.hasVisualOverflow && !resizeText) {
+                            resizeText = true
+                        }
+                    },
+                    style = if (isFinal && !resizeText) {
+                        MaterialTheme.typography.labelLarge
+                    } else if (!isFinal && !resizeText){
                         MaterialTheme.typography.bodyLarge
+                    } else if (isFinal && resizeText) {
+                        MaterialTheme.typography.labelSmall
+                    } else {
+                        MaterialTheme.typography.bodySmall
                     },
                     // Again, this breaks spec, but in this case I think it looks best this way.
                     textAlign = TextAlign.Center,

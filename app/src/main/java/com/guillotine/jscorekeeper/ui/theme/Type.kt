@@ -69,8 +69,18 @@ val ScoreCardTypography = Typography(
         fontSize = 50.sp
     ),
 
+    labelSmall = TextStyle(
+        fontFamily = poppinsFamily,
+        fontSize = 25.sp
+    ),
+
     bodyLarge = TextStyle(
         fontFamily = poppinsFamily,
         fontSize = 28.sp
+    ),
+
+    bodySmall = TextStyle(
+        fontFamily = poppinsFamily,
+        fontSize = 10.sp
     )
 )
