@@ -20,6 +20,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -180,7 +184,9 @@ fun ClueDialogMainContents(
         }
         // Options row
         Row(
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -200,10 +206,26 @@ fun ClueDialogMainContents(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            var resizeFirstButton by remember { mutableStateOf(false) }
+            var resizeSecondButton by remember { mutableStateOf(false) }
             TextButton(
                 onClick = { onDismissRequest() }
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(
+                    text = stringResource(R.string.cancel),
+                    maxLines = 1,
+                    onTextLayout = { result ->
+                        if (result.hasVisualOverflow) {
+                            resizeFirstButton = true
+                        }
+                    },
+                    style = if (resizeFirstButton) {
+                        MaterialTheme.typography.labelSmall
+                    } else {
+                        // This is the standard type for a Text Button according to the M3 spec.
+                        MaterialTheme.typography.labelLarge
+                    }
+                )
             }
             TextButton(
                 onClick = {
@@ -215,7 +237,21 @@ fun ClueDialogMainContents(
                     }
                 }
             ) {
-                Text(text = stringResource(R.string.confirm_continue))
+                Text(
+                    text = stringResource(R.string.confirm_continue),
+                    maxLines = 1,
+                    onTextLayout = { result ->
+                        if (result.hasVisualOverflow) {
+                            resizeSecondButton = true
+                        }
+                    },
+                    style = if (resizeSecondButton) {
+                        MaterialTheme.typography.labelSmall
+                    } else {
+                        // This is the standard type for a Text Button according to the M3 spec.
+                        MaterialTheme.typography.labelLarge
+                    }
+                )
             }
         }
     }
