@@ -1,6 +1,5 @@
 package com.guillotine.jscorekeeper.composable.game
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -98,8 +97,7 @@ fun ClueDialog(
         Card(
             modifier = Modifier
                 // Per M3 spec, the largest possible width.
-                .width(560.dp)
-                .animateContentSize(),
+                .width(560.dp),
             // Per M3 spec, the correct amount of roundness.
             shape = RoundedCornerShape(28.dp),
             // Per M3 spec, the correct dialog color.
@@ -461,8 +459,7 @@ fun ClueDialogMainPreview() {
             modifier = Modifier
                 // Per M3 spec, the largest possible width.
                 .width(560.dp)
-                .height(IntrinsicSize.Max)
-                .animateContentSize(),
+                .height(IntrinsicSize.Max),
             // Per M3 spec, the correct amount of roundness.
             shape = RoundedCornerShape(28.dp),
         ) {
@@ -493,8 +490,7 @@ fun ClueDialogWagerValidPreview() {
             modifier = Modifier
                 // Per M3 spec, the largest possible width.
                 .width(560.dp)
-                .height(IntrinsicSize.Max)
-                .animateContentSize(),
+                .height(IntrinsicSize.Max),
             // Per M3 spec, the correct amount of roundness.
             shape = RoundedCornerShape(28.dp),
         ) {
@@ -521,8 +517,7 @@ fun ClueDialogWagerInvalidPreview() {
             modifier = Modifier
                 // Per M3 spec, the largest possible width.
                 .width(560.dp)
-                .height(IntrinsicSize.Max)
-                .animateContentSize(),
+                .height(IntrinsicSize.Max),
             // Per M3 spec, the correct amount of roundness.
             shape = RoundedCornerShape(28.dp),
         ) {
@@ -549,8 +544,7 @@ fun ClueDialogResponsePreview() {
             modifier = Modifier
                 // Per M3 spec, the largest possible width.
                 .width(560.dp)
-                .height(IntrinsicSize.Max)
-                .animateContentSize(),
+                .height(IntrinsicSize.Max),
             // Per M3 spec, the correct amount of roundness.
             shape = RoundedCornerShape(28.dp),
         ) {
