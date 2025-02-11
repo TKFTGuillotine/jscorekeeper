@@ -1,6 +1,5 @@
 package com.guillotine.jscorekeeper.composable.history
 
-import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,9 +10,9 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,16 +27,13 @@ import com.guillotine.jscorekeeper.R
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.integerArrayResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.guillotine.jscorekeeper.ResultsScreen
-import com.guillotine.jscorekeeper.data.GameData
 import com.guillotine.jscorekeeper.data.processGameData
 import com.guillotine.jscorekeeper.database.ScoreEntity
 import com.guillotine.jscorekeeper.viewmodels.HistoryScreenViewModel
@@ -46,9 +42,12 @@ import java.text.SimpleDateFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryScreenComposable(viewModel: HistoryScreenViewModel, navigationController: NavHostController) {
+fun HistoryScreenComposable(
+    viewModel: HistoryScreenViewModel,
+    navigationController: NavHostController
+) {
     val frontBackPadding = 8.dp
-    val topBottomPadding = 24.dp
+    val rowHeight = 64.dp
     val context = LocalContext.current
     /* Use the language from Android locale to convert into a Java locale, since that will recompose
        if it changes at runtime. Just like in the cards. Using YYYY-MM-DD format because in theory
@@ -62,7 +61,7 @@ fun HistoryScreenComposable(viewModel: HistoryScreenViewModel, navigationControl
         pagedScores = viewModel.getGamesList().collectAsLazyPagingItems()
     }
 
-    Scaffold (topBar = {
+    Scaffold(topBar = {
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -75,24 +74,31 @@ fun HistoryScreenComposable(viewModel: HistoryScreenViewModel, navigationControl
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
         LazyColumn(
             modifier =
-                if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    Modifier.padding(innerPadding).padding(WindowInsets.displayCutout.asPaddingValues()).fillMaxSize()
-                } else {
-                    Modifier.padding(innerPadding).fillMaxSize()
-                },
+            if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                Modifier
+                    .padding(innerPadding)
+                    .padding(WindowInsets.displayCutout.asPaddingValues())
+                    .fillMaxSize()
+            } else {
+                Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (viewModel.isPagingSourceLoaded) {
                 items(
                     count = pagedScores.itemCount,
-                    key = pagedScores.itemKey {it.timestamp}
+                    key = pagedScores.itemKey { it.timestamp }
                 ) { gameIndex ->
                     val game = pagedScores[gameIndex]
                     if (game != null) {
                         Row(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(top = topBottomPadding, bottom = topBottomPadding).clickable {
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(rowHeight)
+                                .clickable {
                                     coroutineScope.launch {
                                         val gameData = processGameData(
                                             applicationContext = context,
@@ -116,14 +122,18 @@ fun HistoryScreenComposable(viewModel: HistoryScreenViewModel, navigationControl
                             horizontalArrangement = Arrangement.Center,
                         ) {
                             Column(
-                                modifier = Modifier.weight(1f).padding(start = frontBackPadding),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = frontBackPadding),
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.Start
                             ) {
                                 Text(dateFormat.format(game.timestamp))
                             }
                             Column(
-                                modifier = Modifier.weight(1f).padding(end = frontBackPadding),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(end = frontBackPadding),
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.End
                             ) {
