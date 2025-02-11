@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.integerArrayResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.paging.compose.LazyPagingItems
@@ -42,7 +43,6 @@ import com.guillotine.jscorekeeper.database.ScoreEntity
 import com.guillotine.jscorekeeper.viewmodels.HistoryScreenViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +50,11 @@ fun HistoryScreenComposable(viewModel: HistoryScreenViewModel, navigationControl
     val frontBackPadding = 8.dp
     val topBottomPadding = 24.dp
     val context = LocalContext.current
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    /* Use the language from Android locale to convert into a Java locale, since that will recompose
+       if it changes at runtime. Just like in the cards. Using YYYY-MM-DD format because in theory
+       it should be understandable no matter what country the user is from.
+     */
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", java.util.Locale(Locale.current.language))
     lateinit var pagedScores: LazyPagingItems<ScoreEntity>
     val coroutineScope = rememberCoroutineScope()
 
