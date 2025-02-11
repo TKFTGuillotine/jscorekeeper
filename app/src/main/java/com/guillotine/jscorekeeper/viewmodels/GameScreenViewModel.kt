@@ -409,6 +409,8 @@ class GameScreenViewModel(
         isDailyDouble = true
         dailyDoubleInitialValue = currentValue
         clueDialogState = ClueDialogState.DAILY_DOUBLE_WAGER
+        // Since this will show up in just a moment, reset it to something that will be visible.
+        currentSelectedClueDialogOption = RadioButtonOptions.CORRECT
     }
 
     /* Should be called constantly after every action taken in the game to ensure it is constantly

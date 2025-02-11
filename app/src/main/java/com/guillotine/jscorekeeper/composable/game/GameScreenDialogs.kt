@@ -138,7 +138,9 @@ fun ClueDialog(
                     onDismissRequest = onDismissRequest,
                     onCorrect = onCorrect,
                     onIncorrect = onIncorrect,
-                    onNoMoreDailyDoubles = { onNoMoreDailyDoubles() }
+                    onNoMoreDailyDoubles = { onNoMoreDailyDoubles() },
+                    currentSelectedOption = currentSelectedOption,
+                    onOptionSelected = onOptionSelected
                 )
 
                 ClueDialogState.NONE -> Unit
@@ -344,6 +346,8 @@ fun ClueDialogWagerContents(
 fun ClueDialogResponseContents(
     currency: String,
     value: Int,
+    currentSelectedOption: RadioButtonOptions,
+    onOptionSelected: (RadioButtonOptions) -> Unit,
     onDismissRequest: () -> Unit,
     onIncorrect: (Int) -> Boolean,
     onCorrect: (Int) -> Boolean,
@@ -375,7 +379,7 @@ fun ClueDialogResponseContents(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 24.dp),
+                .padding(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -388,8 +392,21 @@ fun ClueDialogResponseContents(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .fillMaxWidth()
+                .padding(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 24.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButtonList(
+                currentSelectedOption = currentSelectedOption,
+                onOptionSelected = onOptionSelected,
+                listOfOptions = listOf(RadioButtonOptions.CORRECT, RadioButtonOptions.INCORRECT)
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(
@@ -397,28 +414,20 @@ fun ClueDialogResponseContents(
             ) {
                 Text(text = stringResource(R.string.cancel))
             }
-            Row(
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(
-                    onClick = {
+            TextButton(
+                onClick = {
+                    if (currentSelectedOption == RadioButtonOptions.CORRECT) {
+                        if (!onCorrect(value)) {
+                            onNoMoreDailyDoubles()
+                        }
+                    } else {
                         if (!onIncorrect(value)) {
                             onNoMoreDailyDoubles()
                         }
                     }
-                ) {
-                    Text(text = stringResource(R.string.incorrect))
                 }
-                TextButton(
-                    onClick = {
-                        if (!onCorrect(value)) {
-                            onNoMoreDailyDoubles()
-                        }
-                    }
-                ) {
-                    Text(text = stringResource(R.string.correct))
-                }
+            ) {
+                Text(text = stringResource(R.string.confirm_continue))
             }
         }
     }
@@ -551,7 +560,9 @@ fun ClueDialogResponsePreview() {
                 onDismissRequest = {},
                 onCorrect = ::dummyCallback,
                 onIncorrect = ::dummyCallback,
-                onNoMoreDailyDoubles = {}
+                onNoMoreDailyDoubles = {},
+                currentSelectedOption = RadioButtonOptions.CORRECT,
+                onOptionSelected = {}
             )
         }
 
