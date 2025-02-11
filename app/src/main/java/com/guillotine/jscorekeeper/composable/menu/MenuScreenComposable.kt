@@ -130,6 +130,23 @@ fun MenuScreenComposable(
                     onClick = {
                         scope.launch {
                             viewModel.deleteSavedGame()
+                            viewModel.createGame(GameModes.US_CELEB)
+                            navController.navigate(
+                                GameScreen(
+                                    gameMode = GameModes.US_CELEB,
+                                    timestamp = viewModel.timestamp
+                                )
+                            )
+                        }
+                    }
+                ) {
+                    Text(stringResource(R.string.play_us_celeb_game))
+                }
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        scope.launch {
+                            viewModel.deleteSavedGame()
                             viewModel.createGame(GameModes.UK)
                             navController.navigate(
                                 GameScreen(
