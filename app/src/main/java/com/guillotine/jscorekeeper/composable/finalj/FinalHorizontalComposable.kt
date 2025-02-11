@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -56,7 +58,8 @@ fun FinalHorizontalComposable(
             .padding(innerPadding)
             .padding(displayCutoutPadding)
             .padding(start = 16.dp, end = 16.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -108,7 +111,9 @@ fun FinalHorizontalComposable(
                 RadioButtonList(
                     currentSelectedOption = currentSelectedOption,
                     onOptionSelected = onOptionSelected,
-                    listOfOptions = listOf(RadioButtonOptions.CORRECT, RadioButtonOptions.INCORRECT)
+                    listOfOptions = listOf(RadioButtonOptions.CORRECT, RadioButtonOptions.INCORRECT),
+                    // Since parent is scrollable when overflow, this must not be to compile.
+                    scrollable = false
                 )
                 Button(
                     modifier = Modifier

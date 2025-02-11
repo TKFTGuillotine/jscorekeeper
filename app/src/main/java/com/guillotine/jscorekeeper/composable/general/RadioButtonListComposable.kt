@@ -31,17 +31,23 @@ fun RadioButtonList(
     currentSelectedOption: RadioButtonOptions,
     onOptionSelected: (RadioButtonOptions) -> Unit,
     listOfOptions: List<RadioButtonOptions>,
+    scrollable: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
         HorizontalDivider()
         // selectableGroup used for accessibility reasons.
-        Column(Modifier
-            .selectableGroup()
-            // Given I know there's only ever going to be at most four options, I'm not going
-            // through the hassle of making this a LazyColumn and dealing with the layout
-            // implications that results in.
-            .verticalScroll(rememberScrollState())
+        Column(
+            modifier = if (scrollable) {
+                Modifier
+                    .selectableGroup()
+                    // Given I know there's only ever going to be at most four options, I'm not going
+                    // through the hassle of making this a LazyColumn and dealing with the layout
+                    // implications that results in.
+                    .verticalScroll(rememberScrollState())
+            } else {
+                Modifier.selectableGroup()
+            }
         ) {
             // Could I have stored this as a list in the XML? Probably. But I feel like it's going
             // to be nicer to handle this in the ViewModel as an enum than as a bunch of strings.
