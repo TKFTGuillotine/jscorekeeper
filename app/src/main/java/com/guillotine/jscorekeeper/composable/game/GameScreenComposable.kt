@@ -148,7 +148,8 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
                 wagerText = viewModel.wagerFieldText,
                 setWagerText = { viewModel.wagerFieldText = it },
                 isShowError = viewModel.isShowWagerFieldError,
-                setIsShowError = { viewModel.isShowWagerFieldError = it }
+                setIsShowError = { viewModel.isShowWagerFieldError = it },
+                currentScore = viewModel.score
             )
         }
     }

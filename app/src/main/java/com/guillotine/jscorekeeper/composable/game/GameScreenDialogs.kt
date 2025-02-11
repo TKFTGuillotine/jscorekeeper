@@ -80,6 +80,7 @@ fun ClueDialog(
     onDismissRequest: () -> Unit,
     value: Int,
     currency: String,
+    currentScore: Int,
     listOfOptions: List<RadioButtonOptions>,
     onDailyDouble: () -> Unit,
     isWagerValid: (Int) -> Boolean,
@@ -127,7 +128,8 @@ fun ClueDialog(
                     wagerText = wagerText,
                     setWagerText = setWagerText,
                     isShowError = isShowError,
-                    setIsShowError = setIsShowError
+                    setIsShowError = setIsShowError,
+                    currentScore = currentScore
                 )
 
                 ClueDialogState.DAILY_DOUBLE_RESPONSE -> ClueDialogResponseContents(
@@ -260,6 +262,7 @@ fun ClueDialogMainContents(
 @Composable
 fun ClueDialogWagerContents(
     currency: String,
+    currentScore: Int,
     isWagerValid: (Int) -> Boolean,
     wagerText: String,
     setWagerText: (String) -> Unit,
@@ -287,6 +290,17 @@ fun ClueDialogWagerContents(
                 text = stringResource(R.string.daily_double),
                 // Per M3 spec, the correct style.
                 style = MaterialTheme.typography.headlineSmall,
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 16.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.current_score) + " ${currency}${currentScore}",
             )
         }
         Row(
@@ -482,7 +496,8 @@ fun ClueDialogWagerValidPreview() {
                 setIsShowError = {},
                 wagerText = "",
                 setWagerText = {},
-                isShowError = false
+                isShowError = false,
+                currentScore = 100
             )
 
         }
@@ -509,7 +524,8 @@ fun ClueDialogWagerInvalidPreview() {
                 setIsShowError = {},
                 wagerText = "",
                 setWagerText = {},
-                isShowError = true
+                isShowError = true,
+                currentScore = 100
             )
         }
 
