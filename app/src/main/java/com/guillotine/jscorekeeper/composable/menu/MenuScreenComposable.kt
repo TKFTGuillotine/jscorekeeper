@@ -96,7 +96,6 @@ fun MenuScreenComposable(
                 scrollable = false,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp)
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
