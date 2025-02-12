@@ -23,7 +23,7 @@ import com.guillotine.jscorekeeper.database.ClueEntity
 import com.guillotine.jscorekeeper.database.ClueType
 import com.guillotine.jscorekeeper.database.DailyDoubleEntity
 import com.guillotine.jscorekeeper.database.StatisticsDatabase
-import com.guillotine.jscorekeeper.data.RadioButtonOptions
+import com.guillotine.jscorekeeper.data.ClueTypeRadioButtonOptions
 import com.guillotine.jscorekeeper.data.ClueDialogState
 import com.guillotine.jscorekeeper.data.GameData
 import com.guillotine.jscorekeeper.data.SavedGame
@@ -95,7 +95,7 @@ class GameScreenViewModel(
     var snackbarHostState by mutableStateOf(SnackbarHostState())
         private set
     var currentSelectedClueDialogOption by savedStateHandle.saveable {
-        mutableStateOf(RadioButtonOptions.CORRECT)
+        mutableStateOf(ClueTypeRadioButtonOptions.CORRECT)
     }
         private set
     var wagerFieldText by savedStateHandle.saveable { mutableStateOf("") }
@@ -214,19 +214,19 @@ class GameScreenViewModel(
         }
     }
 
-    fun getClueDialogOptions(): List<RadioButtonOptions> {
+    fun getClueDialogOptions(): List<ClueTypeRadioButtonOptions> {
         if (remainingDailyDoubles != 0) {
             return listOf(
-                RadioButtonOptions.CORRECT,
-                RadioButtonOptions.INCORRECT,
-                RadioButtonOptions.DAILY_DOUBLE,
-                RadioButtonOptions.PASS
+                ClueTypeRadioButtonOptions.CORRECT,
+                ClueTypeRadioButtonOptions.INCORRECT,
+                ClueTypeRadioButtonOptions.DAILY_DOUBLE,
+                ClueTypeRadioButtonOptions.PASS
             )
         }
         return listOf(
-            RadioButtonOptions.CORRECT,
-            RadioButtonOptions.INCORRECT,
-            RadioButtonOptions.PASS
+            ClueTypeRadioButtonOptions.CORRECT,
+            ClueTypeRadioButtonOptions.INCORRECT,
+            ClueTypeRadioButtonOptions.PASS
         )
     }
 
@@ -238,13 +238,13 @@ class GameScreenViewModel(
         // For tracking internal state.
         isDailyDouble = false
         currentValue = value
-        currentSelectedClueDialogOption = RadioButtonOptions.CORRECT
+        currentSelectedClueDialogOption = ClueTypeRadioButtonOptions.CORRECT
         clueDialogState = ClueDialogState.MAIN
         wagerFieldText = ""
         isShowWagerFieldError = false
     }
 
-    fun onClueDialogOptionSelected(option: RadioButtonOptions) {
+    fun onClueDialogOptionSelected(option: ClueTypeRadioButtonOptions) {
         currentSelectedClueDialogOption = option
     }
 
@@ -410,7 +410,7 @@ class GameScreenViewModel(
         dailyDoubleInitialValue = currentValue
         clueDialogState = ClueDialogState.DAILY_DOUBLE_WAGER
         // Since this will show up in just a moment, reset it to something that will be visible.
-        currentSelectedClueDialogOption = RadioButtonOptions.CORRECT
+        currentSelectedClueDialogOption = ClueTypeRadioButtonOptions.CORRECT
     }
 
     /* Should be called constantly after every action taken in the game to ensure it is constantly

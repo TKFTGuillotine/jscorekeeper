@@ -11,10 +11,9 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.guillotine.jscorekeeper.data.GameData
 import com.guillotine.jscorekeeper.database.FinalEntity
 import com.guillotine.jscorekeeper.database.StatisticsDatabase
-import com.guillotine.jscorekeeper.data.RadioButtonOptions
+import com.guillotine.jscorekeeper.data.ClueTypeRadioButtonOptions
 import com.guillotine.jscorekeeper.database.ScoreEntity
 import kotlinx.coroutines.launch
 
@@ -29,7 +28,7 @@ class FinalScreenViewModel(
         private set
     var isGameComplete by savedStateHandle.saveable { mutableStateOf(false) }
         private set
-    var currentSelectedRadioButton by savedStateHandle.saveable { mutableStateOf(RadioButtonOptions.CORRECT) }
+    var currentSelectedRadioButton by savedStateHandle.saveable { mutableStateOf(ClueTypeRadioButtonOptions.CORRECT) }
         private set
     var round by savedStateHandle.saveable { mutableStateOf(0) }
     var score by savedStateHandle.saveable { mutableStateOf(0) }
@@ -75,7 +74,11 @@ class FinalScreenViewModel(
         return null
     }
 
-    fun onRadioButtonSelected(button: RadioButtonOptions) {
+    fun showError() {
+        isShowError = true
+    }
+
+    fun onRadioButtonSelected(button: ClueTypeRadioButtonOptions) {
         currentSelectedRadioButton = button
     }
 

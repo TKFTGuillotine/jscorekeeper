@@ -18,10 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.guillotine.jscorekeeper.MenuScreen
@@ -29,19 +27,19 @@ import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.ResultsScreen
 import com.guillotine.jscorekeeper.composable.general.ScoreCardComposable
 import com.guillotine.jscorekeeper.composable.general.WagerFieldComposable
-import com.guillotine.jscorekeeper.data.RadioButtonOptions
+import com.guillotine.jscorekeeper.data.ClueTypeRadioButtonOptions
 import com.guillotine.jscorekeeper.composable.general.RadioButtonList
-import com.guillotine.jscorekeeper.data.GameData
 
 @Composable
 fun FinalHorizontalComposable(
     innerPadding: PaddingValues,
     score: Int,
-    currentSelectedOption: RadioButtonOptions,
-    onOptionSelected: (RadioButtonOptions) -> Unit,
+    currentSelectedOption: ClueTypeRadioButtonOptions,
+    onOptionSelected: (ClueTypeRadioButtonOptions) -> Unit,
     wagerText: String,
     setWagerText: (String) -> Unit,
     isShowError: Boolean,
+    showError: () -> Unit,
     currency: String,
     submitFinalWager: (Int, Int, Boolean) -> Long?,
     moneyValues: IntArray,
@@ -111,7 +109,7 @@ fun FinalHorizontalComposable(
                 RadioButtonList(
                     currentSelectedOption = currentSelectedOption,
                     onOptionSelected = onOptionSelected,
-                    listOfOptions = listOf(RadioButtonOptions.CORRECT, RadioButtonOptions.INCORRECT),
+                    listOfOptions = listOf(ClueTypeRadioButtonOptions.CORRECT, ClueTypeRadioButtonOptions.INCORRECT),
                     // Since parent is scrollable when overflow, this must not be to compile.
                     scrollable = false
                 )
@@ -121,27 +119,35 @@ fun FinalHorizontalComposable(
                         .fillMaxWidth()
                         .padding(top = 16.dp),
                     onClick = {
-                        val timestamp = submitFinalWager(
-                            wagerText.toInt(),
-                            score,
-                            currentSelectedOption == RadioButtonOptions.CORRECT
-                        )
-                        if (timestamp != null) {
-                            navController.navigate(
-                                route = ResultsScreen(
-                                    timestamp = timestamp,
-                                    score = if (currentSelectedOption == RadioButtonOptions.CORRECT) {score + wagerText.toInt()} else {score - wagerText.toInt()},
-                                    moneyValues = moneyValues,
-                                    multipliers = multipliers,
-                                    currency = currency,
-                                    columns = columns,
-                                    deleteCurrentSavedGame = true
-                                )
-                            ) {
-                                popUpTo(MenuScreen) {
-                                    inclusive = false
+                        if (wagerText.isNotEmpty()) {
+                            val timestamp = submitFinalWager(
+                                wagerText.toInt(),
+                                score,
+                                currentSelectedOption == ClueTypeRadioButtonOptions.CORRECT
+                            )
+                            if (timestamp != null) {
+                                navController.navigate(
+                                    route = ResultsScreen(
+                                        timestamp = timestamp,
+                                        score = if (currentSelectedOption == ClueTypeRadioButtonOptions.CORRECT) {
+                                            score + wagerText.toInt()
+                                        } else {
+                                            score - wagerText.toInt()
+                                        },
+                                        moneyValues = moneyValues,
+                                        multipliers = multipliers,
+                                        currency = currency,
+                                        columns = columns,
+                                        deleteCurrentSavedGame = true
+                                    )
+                                ) {
+                                    popUpTo(MenuScreen) {
+                                        inclusive = false
+                                    }
                                 }
                             }
+                        } else {
+                            showError()
                         }
                     }
                 ) {

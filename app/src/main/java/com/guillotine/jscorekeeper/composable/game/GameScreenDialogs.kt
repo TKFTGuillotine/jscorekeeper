@@ -33,7 +33,7 @@ import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.composable.general.ClueCardComposable
 import com.guillotine.jscorekeeper.composable.general.RadioButtonList
 import com.guillotine.jscorekeeper.composable.general.WagerFieldComposable
-import com.guillotine.jscorekeeper.data.RadioButtonOptions
+import com.guillotine.jscorekeeper.data.ClueTypeRadioButtonOptions
 import com.guillotine.jscorekeeper.data.ClueDialogState
 
 @Composable
@@ -74,13 +74,13 @@ fun NextRoundDialog(
 
 @Composable
 fun ClueDialog(
-    onOptionSelected: (RadioButtonOptions) -> Unit,
-    currentSelectedOption: RadioButtonOptions,
+    onOptionSelected: (ClueTypeRadioButtonOptions) -> Unit,
+    currentSelectedOption: ClueTypeRadioButtonOptions,
     onDismissRequest: () -> Unit,
     value: Int,
     currency: String,
     currentScore: Int,
-    listOfOptions: List<RadioButtonOptions>,
+    listOfOptions: List<ClueTypeRadioButtonOptions>,
     onDailyDouble: () -> Unit,
     isWagerValid: (Int) -> Boolean,
     clueDialogState: ClueDialogState,
@@ -149,12 +149,12 @@ fun ClueDialog(
 
 @Composable
 fun ClueDialogMainContents(
-    onOptionSelected: (RadioButtonOptions) -> Unit,
-    currentSelectedOption: RadioButtonOptions,
+    onOptionSelected: (ClueTypeRadioButtonOptions) -> Unit,
+    currentSelectedOption: ClueTypeRadioButtonOptions,
     onDismissRequest: () -> Unit,
     value: Int,
     currency: String,
-    listOfOptions: List<RadioButtonOptions>,
+    listOfOptions: List<ClueTypeRadioButtonOptions>,
     onDailyDouble: () -> Unit,
     onCorrect: (Int) -> Boolean,
     onIncorrect: (Int) -> Boolean,
@@ -232,10 +232,10 @@ fun ClueDialogMainContents(
             TextButton(
                 onClick = {
                     when (currentSelectedOption) {
-                        RadioButtonOptions.CORRECT -> onCorrect(value)
-                        RadioButtonOptions.INCORRECT -> onIncorrect(value)
-                        RadioButtonOptions.PASS -> onPass(value)
-                        RadioButtonOptions.DAILY_DOUBLE -> onDailyDouble()
+                        ClueTypeRadioButtonOptions.CORRECT -> onCorrect(value)
+                        ClueTypeRadioButtonOptions.INCORRECT -> onIncorrect(value)
+                        ClueTypeRadioButtonOptions.PASS -> onPass(value)
+                        ClueTypeRadioButtonOptions.DAILY_DOUBLE -> onDailyDouble()
                     }
                 }
             ) {
@@ -331,7 +331,11 @@ fun ClueDialogWagerContents(
             }
             TextButton(
                 onClick = {
-                    setIsShowError(!isWagerValid(wagerText.toInt()))
+                    if (wagerText.isNotEmpty()) {
+                        setIsShowError(!isWagerValid(wagerText.toInt()))
+                    } else {
+                        setIsShowError(true)
+                    }
                 }
             ) {
                 Text(text = stringResource(R.string.submit))
@@ -344,8 +348,8 @@ fun ClueDialogWagerContents(
 fun ClueDialogResponseContents(
     currency: String,
     value: Int,
-    currentSelectedOption: RadioButtonOptions,
-    onOptionSelected: (RadioButtonOptions) -> Unit,
+    currentSelectedOption: ClueTypeRadioButtonOptions,
+    onOptionSelected: (ClueTypeRadioButtonOptions) -> Unit,
     onDismissRequest: () -> Unit,
     onIncorrect: (Int) -> Boolean,
     onCorrect: (Int) -> Boolean,
@@ -398,7 +402,10 @@ fun ClueDialogResponseContents(
             RadioButtonList(
                 currentSelectedOption = currentSelectedOption,
                 onOptionSelected = onOptionSelected,
-                listOfOptions = listOf(RadioButtonOptions.CORRECT, RadioButtonOptions.INCORRECT)
+                listOfOptions = listOf(
+                    ClueTypeRadioButtonOptions.CORRECT,
+                    ClueTypeRadioButtonOptions.INCORRECT
+                )
             )
         }
 
@@ -414,7 +421,7 @@ fun ClueDialogResponseContents(
             }
             TextButton(
                 onClick = {
-                    if (currentSelectedOption == RadioButtonOptions.CORRECT) {
+                    if (currentSelectedOption == ClueTypeRadioButtonOptions.CORRECT) {
                         if (!onCorrect(value)) {
                             onNoMoreDailyDoubles()
                         }
@@ -439,9 +446,9 @@ fun dummyCallback(arg: Int): Boolean {
 @Composable
 fun ClueDialogOptionsListPreview() {
     RadioButtonList(
-        currentSelectedOption = RadioButtonOptions.CORRECT,
+        currentSelectedOption = ClueTypeRadioButtonOptions.CORRECT,
         onOptionSelected = {},
-        listOfOptions = RadioButtonOptions.entries
+        listOfOptions = ClueTypeRadioButtonOptions.entries
     )
 }
 
@@ -467,14 +474,14 @@ fun ClueDialogMainPreview() {
                 onDismissRequest = {},
                 value = 200,
                 currency = "$",
-                listOfOptions = RadioButtonOptions.entries,
+                listOfOptions = ClueTypeRadioButtonOptions.entries,
                 onDailyDouble = {},
                 // :: is a function reference operator, allowing the passage of this function as an
                 // argument.
                 onCorrect = ::dummyCallback,
                 onIncorrect = ::dummyCallback,
                 onPass = ::dummyCallback,
-                currentSelectedOption = RadioButtonOptions.CORRECT,
+                currentSelectedOption = ClueTypeRadioButtonOptions.CORRECT,
                 onOptionSelected = {}
             )
 
@@ -555,7 +562,7 @@ fun ClueDialogResponsePreview() {
                 onCorrect = ::dummyCallback,
                 onIncorrect = ::dummyCallback,
                 onNoMoreDailyDoubles = {},
-                currentSelectedOption = RadioButtonOptions.CORRECT,
+                currentSelectedOption = ClueTypeRadioButtonOptions.CORRECT,
                 onOptionSelected = {}
             )
         }

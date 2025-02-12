@@ -62,7 +62,8 @@ fun FinalScreenComposable(
                     moneyValues = route.moneyValues,
                     multipliers = route.multipliers,
                     columns = route.columns,
-                    navController = navController
+                    navController = navController,
+                    showError = viewModel::showError
                 )
             }
 
@@ -80,7 +81,8 @@ fun FinalScreenComposable(
                     moneyValues = route.moneyValues,
                     multipliers = route.multipliers,
                     columns = route.columns,
-                    navController = navController
+                    navController = navController,
+                    showError = viewModel::showError
                 )
             }
 
