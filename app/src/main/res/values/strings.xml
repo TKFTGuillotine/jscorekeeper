@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">J! Scorekeeper</string>
     <string name="resume_game">Resume game</string>
-    <string name="play_us_game">Play US game</string>
-    <string name="play_uk_game">Play UK game</string>
-    <string name="play_au_game">Play AUS game</string>
-    <string name="play_us_celeb_game">Play US Celeb game</string>
-    <string name="view_history">View history</string>
+    <string name="new_game">New game</string>
+    <string name="us">US</string>
+    <string name="uk">UK</string>
+    <string name="australia">Australia</string>
+    <string name="us_celeb">US Celebrity</string>
     <string name="round">Round</string>
     <string name="score">Score</string>
     <string name="next_round">Next round</string>
@@ -48,4 +48,5 @@
     <string name="incorrect_icon_description">X Icon</string>
     <string name="pass_icon_description">Pass Icon</string>
     <string name="daily_double_icon_description">Daily Double Icon</string>
+    <string name="history_icon_description">View history</string>
 </resources>

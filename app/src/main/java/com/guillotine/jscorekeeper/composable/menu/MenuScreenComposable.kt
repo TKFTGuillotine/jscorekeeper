@@ -2,18 +2,18 @@ package com.guillotine.jscorekeeper.composable.menu
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -23,13 +23,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.guillotine.jscorekeeper.FinalScreen
 import com.guillotine.jscorekeeper.data.GameModes
 import com.guillotine.jscorekeeper.GameScreen
 import com.guillotine.jscorekeeper.PastGamesListScreen
 import com.guillotine.jscorekeeper.R
+import com.guillotine.jscorekeeper.composable.general.RadioButtonList
 import com.guillotine.jscorekeeper.data.SavedGame
 import com.guillotine.jscorekeeper.viewmodels.MenuScreenViewModel
 import kotlinx.coroutines.launch
@@ -56,29 +59,58 @@ fun MenuScreenComposable(
             ),
             title = {
                 Text(stringResource(R.string.app_name))
+            },
+            actions = {
+                IconButton(onClick = {
+                    navController.navigate(
+                        PastGamesListScreen
+                    )
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_history_24),
+                        contentDescription = stringResource(R.string.history_icon_description)
+                    )
+                }
             }
         )
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Row(
+        Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(innerPadding)
-                .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+            RadioButtonList(
+                currentSelectedMenuOption = viewModel.currentSelectedOption,
+                onMenuOptionSelected = {
+                    viewModel.currentSelectedOption = it
+                },
+                listOfMenuOptions = listOf(
+                    GameModes.USA,
+                    GameModes.UK,
+                    GameModes.AUSTRALIA,
+                    GameModes.US_CELEB
+                ),
+                scrollable = false,
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .verticalScroll(rememberScrollState())
-                    // Make the column only as wide as the widest button.
-                    .width(IntrinsicSize.Max),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 24.dp)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // If the savedGame passed in by the Activity has 0 columns (meaning it's saved).
-                if (viewModel.isSavedGame(savedGame)) {
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    OutlinedButton(
                         onClick = {
                             if (savedGame != null && savedGame.isFinal) {
                                 navController.navigate(
@@ -101,92 +133,47 @@ fun MenuScreenComposable(
                                     )
                                 )
                             }
-                        }
+                        },
+                        enabled = viewModel.isSavedGame(savedGame)
                     ) {
                         Text(stringResource(R.string.resume_game))
                     }
                 }
-                Button(
-                    // For each button, take up the max size of the column, such that the buttons
-                    // match the size of the largest button.
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        scope.launch {
-                            viewModel.deleteSavedGame()
-                            viewModel.createGame(GameModes.USA)
-                            navController.navigate(
-                                GameScreen(
-                                    gameMode = GameModes.USA,
-                                    timestamp = viewModel.timestamp
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                viewModel.deleteSavedGame()
+                                viewModel.createGame(viewModel.currentSelectedOption)
+                                navController.navigate(
+                                    GameScreen(
+                                        gameMode = viewModel.currentSelectedOption,
+                                        timestamp = viewModel.timestamp
+                                    )
                                 )
-                            )
+                            }
                         }
+                    ) {
+                        Text(stringResource(R.string.new_game))
                     }
-                ) {
-                    Text(stringResource(R.string.play_us_game))
-                }
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        scope.launch {
-                            viewModel.deleteSavedGame()
-                            viewModel.createGame(GameModes.US_CELEB)
-                            navController.navigate(
-                                GameScreen(
-                                    gameMode = GameModes.US_CELEB,
-                                    timestamp = viewModel.timestamp
-                                )
-                            )
-                        }
-                    }
-                ) {
-                    Text(stringResource(R.string.play_us_celeb_game))
-                }
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        scope.launch {
-                            viewModel.deleteSavedGame()
-                            viewModel.createGame(GameModes.UK)
-                            navController.navigate(
-                                GameScreen(
-                                    gameMode = GameModes.UK,
-                                    timestamp = viewModel.timestamp
-                                )
-                            )
-                        }
-                    }
-                ) {
-                    Text(stringResource(R.string.play_uk_game))
-                }
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        scope.launch {
-                            viewModel.deleteSavedGame()
-                            viewModel.createGame(GameModes.AUSTRALIA)
-                            navController.navigate(
-                                GameScreen(
-                                    gameMode = GameModes.AUSTRALIA,
-                                    timestamp = viewModel.timestamp
-                                )
-                            )
-                        }
-                    }
-                ) {
-                    Text(stringResource(R.string.play_au_game))
-                }
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        navController.navigate(
-                            PastGamesListScreen
-                        )
-                    }
-                ) {
-                    Text(stringResource(R.string.view_history))
                 }
             }
+            /*            OutlinedButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                navController.navigate(
+                                    PastGamesListScreen
+                                )
+                            }
+                        ) {
+                            Text(stringResource(R.string.view_history))
+                        }*/
         }
     }
 }

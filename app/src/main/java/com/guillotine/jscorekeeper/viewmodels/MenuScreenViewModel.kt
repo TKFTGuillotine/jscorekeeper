@@ -23,6 +23,7 @@ class MenuScreenViewModel(
     var attemptedLoadTimestamp by mutableStateOf(false)
     var timestamp by mutableStateOf(0L)
         private set
+    var currentSelectedOption by mutableStateOf<GameModes>(GameModes.USA)
 
     init {
         println("MenuScreenViewModel init")
@@ -54,24 +55,24 @@ class MenuScreenViewModel(
         }
     }
 
-        suspend fun loadTimestamp() {
-            val savedGameEntity = statisticsDatabase.statisticsDao().getSavedGame()
-            if (savedGameEntity != null && savedGameEntity.timestamp != 0L) {
-                timestamp = savedGameEntity.timestamp
-                loadedTimestamp = true
-            }
-            attemptedLoadTimestamp = true
+    suspend fun loadTimestamp() {
+        val savedGameEntity = statisticsDatabase.statisticsDao().getSavedGame()
+        if (savedGameEntity != null && savedGameEntity.timestamp != 0L) {
+            timestamp = savedGameEntity.timestamp
+            loadedTimestamp = true
         }
+        attemptedLoadTimestamp = true
+    }
 
 
-        companion object {
-            val STATISTICS_DATABASE_KEY = object : CreationExtras.Key<StatisticsDatabase> {}
+    companion object {
+        val STATISTICS_DATABASE_KEY = object : CreationExtras.Key<StatisticsDatabase> {}
 
-            val Factory: ViewModelProvider.Factory = viewModelFactory {
-                initializer {
-                    val statisticsDatabase = (this[STATISTICS_DATABASE_KEY] as StatisticsDatabase)
-                    MenuScreenViewModel(statisticsDatabase)
-                }
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val statisticsDatabase = (this[STATISTICS_DATABASE_KEY] as StatisticsDatabase)
+                MenuScreenViewModel(statisticsDatabase)
             }
         }
     }
+}
