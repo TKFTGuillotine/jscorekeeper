@@ -1,10 +1,16 @@
 package com.guillotine.jscorekeeper.composable.menu
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -23,8 +29,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.guillotine.jscorekeeper.FinalScreen
@@ -75,104 +83,119 @@ fun MenuScreenComposable(
         )
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState()),
+            modifier =
+            if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            } else {
+                Modifier
+                    .padding(innerPadding)
+                    .padding(WindowInsets.displayCutout.asPaddingValues())
+                    .fillMaxSize()
+            },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            RadioButtonList(
-                currentSelectedMenuOption = viewModel.currentSelectedOption,
-                onMenuOptionSelected = {
-                    viewModel.currentSelectedOption = it
-                },
-                listOfMenuOptions = listOf(
-                    GameModes.USA,
-                    GameModes.UK,
-                    GameModes.AUSTRALIA,
-                    GameModes.US_CELEB
-                ),
-                scrollable = false,
-                modifier = Modifier
-                    .fillMaxWidth()
+            Column(
+                modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
+            {
+                Text(
                     modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    text = stringResource(R.string.select_game),
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Start
+                )
+                RadioButtonList(
+                    currentSelectedMenuOption = viewModel.currentSelectedOption,
+                    onMenuOptionSelected = {
+                        viewModel.currentSelectedOption = it
+                    },
+                    listOfMenuOptions = listOf(
+                        GameModes.USA,
+                        GameModes.UK,
+                        GameModes.AUSTRALIA,
+                        GameModes.US_CELEB
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .weight(1f)
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Center
+                )
+                Row(
+                    // Per M3 spec, 40dp is the height of a button, +24.dp for the padding.
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedButton(
-                        onClick = {
-                            if (savedGame != null && savedGame.isFinal) {
-                                navController.navigate(
-                                    FinalScreen(
-                                        score = savedGame.score,
-                                        round = savedGame.round,
-                                        currency = savedGame.gameData.currency,
-                                        moneyValues = savedGame.gameData.moneyValues,
-                                        multipliers = savedGame.gameData.multipliers,
-                                        columns = savedGame.gameData.columns,
-                                        timestamp = viewModel.timestamp
-                                    )
-                                )
-                            } else {
-                                navController.navigate(
-                                    GameScreen(
-                                        gameMode = GameModes.RESUME,
-                                        // The important bit that won't get overwritten.
-                                        timestamp = viewModel.timestamp
-                                    )
-                                )
-                            }
-                        },
-                        enabled = viewModel.isSavedGame(savedGame)
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(top = 24.dp, start = 24.dp, end = 24.dp),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Text(stringResource(R.string.resume_game))
-                    }
-                }
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Button(
-                        onClick = {
-                            scope.launch {
-                                viewModel.deleteSavedGame()
-                                viewModel.createGame(viewModel.currentSelectedOption)
-                                navController.navigate(
-                                    GameScreen(
-                                        gameMode = viewModel.currentSelectedOption,
-                                        timestamp = viewModel.timestamp
+                        OutlinedButton(
+                            onClick = {
+                                if (savedGame != null && savedGame.isFinal) {
+                                    navController.navigate(
+                                        FinalScreen(
+                                            score = savedGame.score,
+                                            round = savedGame.round,
+                                            currency = savedGame.gameData.currency,
+                                            moneyValues = savedGame.gameData.moneyValues,
+                                            multipliers = savedGame.gameData.multipliers,
+                                            columns = savedGame.gameData.columns,
+                                            timestamp = viewModel.timestamp
+                                        )
                                     )
-                                )
-                            }
+                                } else {
+                                    navController.navigate(
+                                        GameScreen(
+                                            gameMode = GameModes.RESUME,
+                                            // The important bit that won't get overwritten.
+                                            timestamp = viewModel.timestamp
+                                        )
+                                    )
+                                }
+                            },
+                            enabled = viewModel.isSavedGame(savedGame)
+                        ) {
+                            Text(stringResource(R.string.resume_game))
                         }
+                    }
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(top = 24.dp, start = 24.dp, end = 24.dp),
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Text(stringResource(R.string.new_game))
+                        Button(
+                            onClick = {
+                                scope.launch {
+                                    viewModel.deleteSavedGame()
+                                    viewModel.createGame(viewModel.currentSelectedOption)
+                                    navController.navigate(
+                                        GameScreen(
+                                            gameMode = viewModel.currentSelectedOption,
+                                            timestamp = viewModel.timestamp
+                                        )
+                                    )
+                                }
+                            }
+                        ) {
+                            Text(stringResource(R.string.new_game))
+                        }
                     }
                 }
             }
-            /*            OutlinedButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                navController.navigate(
-                                    PastGamesListScreen
-                                )
-                            }
-                        ) {
-                            Text(stringResource(R.string.view_history))
-                        }*/
         }
     }
 }

@@ -2,6 +2,7 @@
     <string name="app_name">J! Scorekeeper</string>
     <string name="resume_game">Resume</string>
     <string name="new_game">Start</string>
+    <string name="select_game">Select game:</string>
     <string name="us">US</string>
     <string name="uk">UK</string>
     <string name="australia">Australia</string>
