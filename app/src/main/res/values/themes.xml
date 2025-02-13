@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Theme.JScorekeeper" parent="android:Theme.Material.Light.NoActionBar">
+    </style>
 
-    <style name="Theme.JScorekeeper" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.JScorekeeper.SplashScreen" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenBackground">@color/splashscreen_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.JScorekeeper</item>
+    </style>
+
 </resources>
