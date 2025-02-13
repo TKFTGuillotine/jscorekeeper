@@ -11,6 +11,7 @@ import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import androidx.window.core.layout.WindowSizeClass
 import com.guillotine.jscorekeeper.FinalScreen
 import com.guillotine.jscorekeeper.MenuScreen
 import com.guillotine.jscorekeeper.R
@@ -36,6 +38,8 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
 
     // Requires Context, so again, shouldn't be done in the ViewModel.
     val snackbarScope = rememberCoroutineScope()
+
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
     Scaffold(
         topBar = {
@@ -77,30 +81,38 @@ fun GameScreenComposable(navController: NavHostController, viewModel: GameScreen
             }
         }
 
-        when (LocalConfiguration.current.orientation) {
-            Configuration.ORIENTATION_LANDSCAPE -> {
-                GameBoardHorizontalComposable(
-                    innerPadding = innerPadding,
-                    moneyValues = viewModel.moneyValues,
-                    currency = viewModel.currency,
-                    score = viewModel.score,
-                    onClueClick = { viewModel.showClueDialog(it) },
-                    onNextRoundClick = { viewModel.showRoundDialog() },
-                    isRemainingValue = {if (viewModel.columnsPerValue[it] != 0) {true} else {false} }
-                )
-            }
-
-            else -> {
-                GameBoardVerticalComposable(
-                    innerPadding = innerPadding,
-                    moneyValues = viewModel.moneyValues,
-                    currency = viewModel.currency,
-                    score = viewModel.score,
-                    onClueClick = { viewModel.showClueDialog(it) },
-                    onNextRoundClick = { viewModel.showRoundDialog() },
-                    isRemainingValue = {if (viewModel.columnsPerValue[it] != 0) {true} else {false} }
-                )
-            }
+        if (windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND))
+            GameBoardVerticalComposable(
+                innerPadding = innerPadding,
+                moneyValues = viewModel.moneyValues,
+                currency = viewModel.currency,
+                score = viewModel.score,
+                onClueClick = { viewModel.showClueDialog(it) },
+                onNextRoundClick = { viewModel.showRoundDialog() },
+                isRemainingValue = {
+                    if (viewModel.columnsPerValue[it] != 0) {
+                        true
+                    } else {
+                        false
+                    }
+                }
+            )
+        else {
+            GameBoardHorizontalComposable(
+                innerPadding = innerPadding,
+                moneyValues = viewModel.moneyValues,
+                currency = viewModel.currency,
+                score = viewModel.score,
+                onClueClick = { viewModel.showClueDialog(it) },
+                onNextRoundClick = { viewModel.showRoundDialog() },
+                isRemainingValue = {
+                    if (viewModel.columnsPerValue[it] != 0) {
+                        true
+                    } else {
+                        false
+                    }
+                }
+            )
         }
 
         if (viewModel.isShowRoundDialog) {

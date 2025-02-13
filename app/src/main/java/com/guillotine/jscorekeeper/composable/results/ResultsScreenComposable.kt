@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.datastore.dataStore
 import androidx.navigation.NavHostController
+import androidx.window.core.layout.WindowSizeClass
 import com.guillotine.jscorekeeper.R
 import com.guillotine.jscorekeeper.ResultsScreen
 import com.guillotine.jscorekeeper.data.SavedGameSerializer
@@ -29,6 +31,8 @@ import kotlinx.coroutines.withContext
 fun ResultsScreenComposable(
     viewModel: ResultsScreenViewModel,
 ) {
+
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
     Scaffold(
         topBar = {
@@ -43,14 +47,10 @@ fun ResultsScreenComposable(
             )
         }, modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
-        when (LocalConfiguration.current.orientation) {
-            Configuration.ORIENTATION_LANDSCAPE -> {
-                ResultsHorizontalComposable(viewModel, innerPadding)
-            }
-
-            else -> {
-                ResultsVerticalComposable(viewModel, innerPadding)
-            }
+        if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)) {
+            ResultsHorizontalComposable(viewModel, innerPadding)
+        } else {
+            ResultsVerticalComposable(viewModel, innerPadding)
         }
     }
 }

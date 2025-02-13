@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -36,10 +38,13 @@ fun ResultsHorizontalComposable(
     val roundColumnPaddingValue = 10.dp
     val startEndPadding = 8.dp
     val graphColor = MaterialTheme.colorScheme.primary
-    val displayCutoutPadding = WindowInsets.displayCutout.asPaddingValues()
 
     Row(
-        modifier = Modifier.padding(innerPadding).padding(displayCutoutPadding).fillMaxSize(),
+        modifier = Modifier
+            .padding(innerPadding)
+            .consumeWindowInsets(innerPadding)
+            .windowInsetsPadding(WindowInsets.displayCutout)
+            .fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -59,7 +64,9 @@ fun ResultsHorizontalComposable(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {

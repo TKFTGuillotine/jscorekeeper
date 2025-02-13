@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -84,21 +86,18 @@ fun MenuScreenComposable(
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
             modifier =
-            if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-            } else {
-                Modifier
-                    .padding(innerPadding)
-                    .padding(WindowInsets.displayCutout.asPaddingValues())
-                    .fillMaxSize()
-            },
+            Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .windowInsetsPadding(WindowInsets.displayCutout)
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             )
@@ -127,10 +126,11 @@ fun MenuScreenComposable(
                         .weight(1f)
                 )
                 Row(
-                    // Per M3 spec, 40dp is the height of a button, +24.dp for the padding.
+                    // Per M3 spec, 40dp is the height of a button, +24+16.dp for the padding.
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(64.dp),
+                        .height(78.dp)
+                        .padding(bottom = 16.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {

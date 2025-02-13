@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,15 +42,12 @@ fun GameBoardHorizontalComposable(
 ) {
     // For spacing buttons
     val horizontalSpacing = 8.dp
-    // The whole scaffold thing doesn't seem to account for the display cutout, so I'll handle it
-    // myself here. It works fine in portrait because of the cutout being a part of the status bar,
-    // so that's nice at least.
-    val displayCutoutPadding = WindowInsets.displayCutout.asPaddingValues()
 
     Column(
         modifier = Modifier
             .padding(innerPadding)
-            .padding(displayCutoutPadding)
+            .consumeWindowInsets(innerPadding)
+            .windowInsetsPadding(WindowInsets.displayCutout)
             .fillMaxSize(),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally

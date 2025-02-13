@@ -93,6 +93,8 @@ dependencies {
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.room.paging)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.adaptive.android)
+    implementation(libs.androidx.window.core)
     ksp(libs.androidx.room.compiler)
     // For async Room (necessary seemingly, not sure why this is separate?)
     implementation(libs.androidx.room.ktx)

@@ -25,6 +25,8 @@ pagingRuntimeAndroid = "3.3.5"
 pagingComposeAndroid = "3.3.5"
 roomPaging = "2.6.1"
 coreSplashscreen = "1.2.0-alpha02"
+adaptiveAndroid = "1.0.0"
+windowCore = "1.4.0-beta02"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -57,6 +59,8 @@ androidx-paging-runtime = {group = "androidx.paging", name = "paging-runtime", v
 androidx-paging-compose = {group = "androidx.paging", name = "paging-compose", version.ref = "pagingComposeAndroid"}
 androidx-room-paging = {group = "androidx.room", name = "room-paging", version.ref = "roomPaging"}
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-adaptive-android = { group = "androidx.compose.material3.adaptive", name = "adaptive-android", version.ref = "adaptiveAndroid" }
+androidx-window-core = { group = "androidx.window", name = "window-core", version.ref = "windowCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
