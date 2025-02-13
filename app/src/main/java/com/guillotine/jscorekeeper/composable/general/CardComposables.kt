@@ -68,7 +68,7 @@ fun ScoreCardComposable(
             ) {
                 Text(
                     modifier = modifier
-                        .padding(top = 8.dp, bottom = 8.dp),
+                        .padding(top = 4.dp, bottom = 4.dp),
                     text = if (value >= 0) {
                         // Provides a format string to apply the value to. The comma tells the function
                         // to use regionally appropriate separators with the value that comes next,
