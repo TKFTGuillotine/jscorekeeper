@@ -20,7 +20,7 @@ android {
         minSdk = 29
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -80,8 +80,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     // Used just for Proto DataStore.
     implementation(libs.kotlinx.collections.immutable)
-    // For the Google Font provider used for the clue box font (I'm not licensing Swiss).
-    implementation(libs.androidx.ui.text.google.fonts)
     // For the DataStore, the API that replaces SharedPreferences, to save games to resume later.
     implementation(libs.androidx.datastore)
     // For saving during onDestroy and guaranteeing it will complete.

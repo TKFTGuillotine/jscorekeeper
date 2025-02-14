@@ -17,7 +17,6 @@ kotlinxSerializationCore = "1.7.3"
 lifecycleViewmodelCompose = "2.8.7"
 navigationCompose = "2.8.6"
 roomRuntime = "2.6.1"
-uiTextGoogleFonts = "1.7.7"
 workRuntimeKtx = "2.10.0"
 room = "2.6.1"
 pagingCommonAndroid = "3.3.5"
@@ -35,7 +34,6 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
-androidx-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
