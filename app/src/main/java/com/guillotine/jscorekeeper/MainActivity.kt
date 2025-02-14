@@ -12,7 +12,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -34,8 +33,6 @@ import com.guillotine.jscorekeeper.composable.history.HistoryScreenComposable
 import com.guillotine.jscorekeeper.composable.menu.MenuScreenComposable
 import com.guillotine.jscorekeeper.composable.results.ResultsScreenComposable
 import com.guillotine.jscorekeeper.data.GameData
-import com.guillotine.jscorekeeper.data.GameData.Companion
-import com.guillotine.jscorekeeper.data.GameModes
 import com.guillotine.jscorekeeper.data.SavedGame
 import com.guillotine.jscorekeeper.data.SavedGameSerializer
 import com.guillotine.jscorekeeper.data.processGameData

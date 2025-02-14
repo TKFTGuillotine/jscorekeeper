@@ -15,7 +15,6 @@ import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.guillotine.jscorekeeper.data.GameData
 import com.guillotine.jscorekeeper.data.GameModes
 import com.guillotine.jscorekeeper.database.ScoreEntity
 import com.guillotine.jscorekeeper.database.StatisticsDatabase

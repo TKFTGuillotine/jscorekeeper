@@ -1,6 +1,5 @@
 package com.guillotine.jscorekeeper
 
-import com.guillotine.jscorekeeper.data.GameData
 import com.guillotine.jscorekeeper.data.GameModes
 import kotlinx.serialization.Serializable
 

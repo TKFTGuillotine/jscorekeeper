@@ -1,36 +1,22 @@
 package com.guillotine.jscorekeeper.viewmodels
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.integerArrayResource
-import androidx.compose.ui.res.integerResource
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
-import androidx.lifecycle.viewmodel.compose.saveable
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.guillotine.jscorekeeper.R
-import com.guillotine.jscorekeeper.data.GameData
-import com.guillotine.jscorekeeper.data.GameModes
-import com.guillotine.jscorekeeper.database.ClueEntity
 import com.guillotine.jscorekeeper.database.ClueType
 import com.guillotine.jscorekeeper.database.DailyDoubleEntity
 import com.guillotine.jscorekeeper.database.FinalEntity
-import com.guillotine.jscorekeeper.database.StatisticsDao
 import com.guillotine.jscorekeeper.database.StatisticsDatabase
 import kotlinx.coroutines.launch
 
-@OptIn(SavedStateHandleSaveableApi::class)
 class ResultsScreenViewModel(
-    private val savedStateHandle: SavedStateHandle,
     private val timestamp: Long,
     private val moneyValues: IntArray,
     private val multipliers: IntArray,
@@ -164,7 +150,15 @@ class ResultsScreenViewModel(
                 val currency = (this[CURRENCY_KEY] as String)
                 val columns = (this[COLUMNS_KEY] as Int)
                 val statisticsDatabase = (this[DATABASE_KEY] as StatisticsDatabase)
-                ResultsScreenViewModel(savedStateHandle, timestamp, moneyValues, multipliers, currency, score, columns, statisticsDatabase)
+                ResultsScreenViewModel(
+                    timestamp,
+                    moneyValues,
+                    multipliers,
+                    currency,
+                    score,
+                    columns,
+                    statisticsDatabase
+                )
             }
         }
     }

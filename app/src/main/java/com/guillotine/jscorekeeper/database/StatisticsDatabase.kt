@@ -1,6 +1,5 @@
 package com.guillotine.jscorekeeper.database
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
